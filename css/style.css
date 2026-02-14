@@ -406,7 +406,147 @@ footer {
     text-decoration: underline;
 }
 
-a, a:hover, a:visited, a:active {
-  color: inherit; 
-  text-decoration: none;
+a,
+a:hover,
+a:visited,
+a:active {
+    color: inherit;
+    text-decoration: none;
+}
+
+/* dashboard */
+.dashboard-container {
+    padding: 2rem 5%;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.welcome-bar {
+    background: #2c3e50;
+    color: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    margin-bottom: 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.welcome-bar h2 {
+    margin: 0;
+    font-size: 1.8rem;
+}
+
+.welcome-bar p {
+    margin: 0.3rem 0 0;
+    opacity: 0.9;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+}
+
+.stat-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.8rem;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    text-align: center;
+    transition: transform 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+}
+
+.stat-icon {
+    font-size: 2.5rem;
+    color: #e67e22;
+    margin-bottom: 1rem;
+}
+
+.stat-value {
+    font-size: 2.2rem;
+    font-weight: bold;
+    color: #2c3e50;
+    margin-bottom: 0.3rem;
+}
+
+.stat-label {
+    color: #777;
+    font-size: 1.1rem;
+}
+
+.actions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+}
+
+.action-card {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem 1.5rem;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.action-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+}
+
+.action-icon {
+    font-size: 3rem;
+    color: #e67e22;
+    margin-bottom: 1.2rem;
+}
+
+.action-title {
+    font-size: 1.4rem;
+    margin-bottom: 0.8rem;
+    color: #2c3e50;
+}
+
+.action-btn {
+    display: inline-block;
+    margin-top: 1rem;
+    padding: 0.8rem 1.8rem;
+    background: #e67e22;
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: 500;
+    transition: background 0.3s;
+}
+
+.action-btn:hover {
+    background: #d35400;
+}
+
+.logout-btn {
+    background: #c0392b !important;
+}
+
+.logout-btn:hover {
+    background: #a93226 !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .welcome-bar {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .stats-grid,
+    .actions-grid {
+        grid-template-columns: 1fr;
+    }
 }

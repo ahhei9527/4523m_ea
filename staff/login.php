@@ -11,7 +11,6 @@
 
 <body>
     <?php
-    // staff/login.php
     session_start();
     // staff/login.php
     if (isset($_SESSION['staff_id']) && isset($_SESSION['staff_role'])) {

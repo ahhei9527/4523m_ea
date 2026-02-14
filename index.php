@@ -11,6 +11,7 @@
 
 <body>
     <?php include("connections/dbconn.php");
+    session_start();
     $query = "
     SELECT f.fid, f.fname, f.fdesc, f.fprice, GROUP_CONCAT(m.mname SEPARATOR ', ') AS materials 
     FROM Furnitures f
@@ -41,7 +42,18 @@
             <a href="customer/shop.php">Shop</a>
             <a href="customer/orders.php">My Orders</a>
             <a href="customer/profile.php">Profile</a>
-            <a href="staff/login.php" class="staff-link">Staff Login</a>
+            <?php if (isset($_SESSION['customer_id'])): ?>
+                <a href="customer/logout.php">Logout (<?= htmlspecialchars($_SESSION['customer_name']) ?>)</a>
+            <?php else: ?>
+                <a href="login.php">Login</a>
+            <?php endif; ?>
+            <?php if (isset($_SESSION['staff_id']) && $_SESSION['staff_role'] === "admin"): ?>
+                <a href="staff/logout.php">Logout (<?= htmlspecialchars($_SESSION['staff_name']) ?>)</a>
+                <a href="dashboard.php">Admin Dashboard</a>
+            <?php elseif (isset($_SESSION['staff_id']) && $_SESSION['staff_role'] !== "admin"): ?>
+                <a href="dashboard.php">Staff Dashboard</a>
+                <a href="staff/logout.php">Logout (<?= htmlspecialchars($_SESSION['staff_name']) ?>)</a>
+            <?php endif; ?>
         </nav>
         <div class="nav-right">
             <a href="customer/cart.php" class="cart-icon">
@@ -78,7 +90,8 @@
                     <div class="product-card">
                         <div class="product-image">
                             <!-- Replace with real image path when available -->
-                            <img src="images/<?= htmlspecialchars($item['fname'])?>.png" alt="<?= htmlspecialchars($item['fname']) ?>">
+                            <img src="images/<?= htmlspecialchars($item['fname']) ?>.png"
+                                alt="<?= htmlspecialchars($item['fname']) ?>">
                             <div class="price-tag">$
                                 <?= number_format($item['fprice'], 2) ?>
                             </div>
