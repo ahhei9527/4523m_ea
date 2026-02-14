@@ -45,7 +45,7 @@
             <?php if (isset($_SESSION['customer_id'])): ?>
                 <a href="customer/logout.php">Logout (<?= htmlspecialchars($_SESSION['customer_name']) ?>)</a>
             <?php else: ?>
-                <a href="login.php">Login</a>
+                <a href="login.php">Login / Reegister</a>
             <?php endif; ?>
             <?php if (isset($_SESSION['staff_id']) && $_SESSION['staff_role'] === "admin"): ?>
                 <a href="staff/logout.php">Logout (<?= htmlspecialchars($_SESSION['staff_name']) ?>)</a>

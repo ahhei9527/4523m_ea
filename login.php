@@ -26,7 +26,10 @@
     } elseif (isset($_POST['customer_login'])) {
         header("Location: customer/login.php");
         exit();
-    }
+    } elseif (isset($_POST['customer_register'])) {
+        header("Location: customer/register.php");
+        exit();
+    } 
     ?>
     <div class="login-container">
         <div class="login-box">
@@ -50,9 +53,13 @@
                     <button type="submit" class="btn-login" name="customer_login">
                         <i class="fas fa-sign-in-alt"></i> Customer Login
                     </button>
+                    <br /><br />
+                    <button type="submit" class="btn-login" name="customer_register">
+                        <i class="fas fa-user-plus"></i> Customer Register
+                    </button>
             </form>
 
-            <a href="../index.php" class="back-link">← Back to Home</a>
+            <a href="index.php" class="back-link">← Back to Home</a>
         </div>
     </div>
     </div>
