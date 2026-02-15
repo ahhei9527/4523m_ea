@@ -11,65 +11,69 @@
 
 <body>
     <?php
-// staff/login.php
+    // staff/login.php
+    
+    session_start();
 
-session_start();
+    // If already logged in, go to dashboard
+    if (isset($_SESSION['staff_id']) && isset($_SESSION['staff_role'])) {
+        header("Location: dashboard.php");
+        exit();
+    }
 
-// If already logged in, go to dashboard
-if (isset($_SESSION['staff_id']) && isset($_SESSION['staff_role'])) {
-    header("Location: dashboard.php");
-    exit();
-}
+    $error = '';
+    $input_sname = '';  // for repopulating the form
+    
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $sname = trim($_POST['sname'] ?? '');
+        $spassword = trim($_POST['spassword'] ?? '');
 
-$error = '';
-$input_sname = '';  // for repopulating the form
+        $input_sname = $sname;
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $sname     = trim($_POST['sname'] ?? '');
-    $spassword = trim($_POST['spassword'] ?? '');
+        if (empty($sname) || empty($spassword)) {
+            $error = "Please enter both Username and Password.";
+        } else {
+            include '../connections/dbconn.php';
 
-    $input_sname = $sname;
-
-    if (empty($sname) || empty($spassword)) {
-        $error = "Please enter both Username and Password.";
-    } else {
-        include '../connections/dbconn.php';
-
-        // Query by sname (username)
-        $stmt = $conn->prepare("
-            SELECT sid, sname, spassword, srole 
+            // Query by sname (username)
+            $stmt = $conn->prepare("
+            SELECT sid, sname, spassword, srole , sstatus
             FROM Staffs 
             WHERE sname = ?
         ");
 
-        $stmt->bind_param("s", $sname);   // "s" = string
-        $stmt->execute();
-        $result = $stmt->get_result();
+            $stmt->bind_param("s", $sname);   // "s" = string
+            $stmt->execute();
+            $result = $stmt->get_result();
 
-        if ($result->num_rows === 0) {
-            $error = "Username does not exist.";
-        } else {
-            $row = $result->fetch_assoc();
-
-            // Plain text comparison (temporary — upgrade to hashed later)
-            if ($spassword === $row['spassword']) {
-                // Success
-                $_SESSION['staff_id']   = $row['sid'];
-                $_SESSION['staff_name'] = $row['sname'];
-                $_SESSION['staff_role'] = $row['srole'];
-
-                header("Location: dashboard.php");
-                exit();
+            if ($result->num_rows === 0) {
+                $error = "Username does not exist.";
             } else {
-                $error = "Incorrect password.";
+                $row = $result->fetch_assoc();
+
+                // Plain text comparison (temporary — upgrade to hashed later)
+                if ($row['sstatus'] === 0) {
+                    $error = "This staff account is inactive.";
+                } else {
+                    if (password_verify($spassword, $row['spassword'])) {
+                        // Success
+                        $_SESSION['staff_id'] = $row['sid'];
+                        $_SESSION['staff_name'] = $row['sname'];
+                        $_SESSION['staff_role'] = $row['srole'];
+
+                        header("Location: dashboard.php");
+                        exit();
+                    } else {
+                        $error = "Incorrect password.";
+                    }
+                }
+
+                $stmt->close();
+                mysqli_close($conn);
             }
         }
-
-        $stmt->close();
-        mysqli_close($conn);
     }
-}
-?>
+    ?>
     <div class="login-container">
         <div class="login-box">
             <div class="login-header">
@@ -86,15 +90,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <form method="POST" action="">
                 <div class="form-group">
                     <label for="sname">Username</label>
-                    <input type="text" id="sname" name="sname" required 
-                           placeholder="Enter your username" 
-                           value="<?= htmlspecialchars($input_sname) ?>">
+                    <input type="text" id="sname" name="sname" required placeholder="Enter your username"
+                        value="<?= htmlspecialchars($input_sname) ?>">
                 </div>
 
                 <div class="form-group">
                     <label for="spassword">Password</label>
-                    <input type="password" id="spassword" name="spassword" required 
-                           placeholder="Enter your password">
+                    <input type="password" id="spassword" name="spassword" required placeholder="Enter your password">
                 </div>
 
                 <button type="submit" class="btn-login">

@@ -15,7 +15,6 @@ $input_cname = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $cname     = trim($_POST['cname'] ?? '');
     $cpassword = trim($_POST['cpassword'] ?? '');
-    $hashed = password_hash($cpassword, PASSWORD_DEFAULT);
 
     $input_cname = $cname; // for repopulating the form
 
@@ -42,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             // Plain text comparison (as per your current DB design)
             // In real projects → use password_verify()
-            if ($cpassword === $row['cpassword']) {
+            if (password_verify($cpassword, $row['cpassword'])) {
                 // Login successful
                 $_SESSION['customer_id']   = $row['cid'];
                 $_SESSION['customer_name'] = $row['cname'];

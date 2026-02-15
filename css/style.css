@@ -615,3 +615,29 @@ a:active {
     font-size: 0.9rem;
     min-width: 100px;
 }
+
+.cart-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.cart-table th,
+.cart-table td {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+}
+
+.cart-table th {
+    background: #2c3e50;
+    color: white;
+}
+
+.cart-table tfoot td {
+    padding: 1.2rem;
+    border-top: 2px solid #eee;
+}
+
+.cart-table tfoot td:first-child {
+    text-align: right;
+}

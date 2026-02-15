@@ -12,84 +12,127 @@
 <body>
     <?php
     session_start();
-    if (isset($_SESSION["customer_id"])) {
-        header("Location: ../index.php");
-        exit();
-    }
+    include '../connections/dbconn.php';
+    $message = '';
+    $error = '';
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $action = $_POST['action'] ?? '';
-
         if ($action === 'add') {
             $cname = trim($_POST['cname'] ?? '');
             $cpass = trim($_POST['cpass'] ?? '');
+            $caddress = trim($_POST['caddress'] ?? '');
             $cemail = trim($_POST['cemail'] ?? '');
             $ctel = trim($_POST['ctel'] ?? '');
-
-            if (empty($cname) || empty($cpass) || empty($cemail)) {
-                $error = "Name, password and email are required.";
+            $company = trim($_POST['company'] ?? '');
+            if (empty($cname) || empty($cpass) || empty($caddress) || empty($cemail)) {
+                $error = "Name, password, address and email are required.";
             } elseif (strlen($cpass) < 6) {
                 $error = "Password must be at least 6 characters.";
             } else {
-                $hashed = password_hash($cpass, PASSWORD_DEFAULT);
-
-                $stmt = $conn->prepare("
-                INSERT INTO Customers (cname, cpassword, ctel, caddr)
-                VALUES (?, ?, ?, ?)
-            ");
-                $stmt->bind_param("ssss", $cname, $hashed,$caddr, $ctel);
-
-                if ($stmt->execute()) {
-                    $message = "New customer registered successfully.";
+                $check = $conn->prepare("SELECT cid FROM Customers WHERE cemail = ?");
+                $check->bind_param("s", $cemail);
+                $check->execute();
+                if ($check->get_result()->num_rows > 0) {
+                    $error = "This email is already registered.";
                 } else {
-                    $error = "Error registering customer: " . $conn->error;
+                    $hashed = password_hash($cpass, PASSWORD_DEFAULT);
+
+                    $stmt = $conn->prepare("
+                INSERT INTO Customers (cname, cpassword, caddr, cemail, ctel, company)
+                VALUES (?, ?, ?, ?, ?, ?)
+            ");
+                    $stmt->bind_param("ssssss", $cname, $hashed, $caddress, $cemail, $ctel, $company);
+
+                    if ($stmt->execute()) {
+                        $_SESSION['register_success'] = "Registration successful! Please log in.";
+                        header("Location: login.php");  // or your customer login page
+                        exit();
+                    } else {
+                        $error = "Registration failed: " . $conn->error;
+                    }
+                    $stmt->close();
                 }
-                $stmt->close();
+                $check->close();
             }
-        } else {
-            $error = "Invalid action.";
         }
     }
+    mysqli_close($conn);
     ?>
     <header class="navbar">
-        <div class="logo">
-            <h2>Premium Living</h2>
-            <small>Customer Registration</small>
+    <div class="logo">
+        <h2>Premium Living</h2>
+        <small>Customer Registration</small>
+    </div>
+    <nav class="nav-links">
+        <a href="../index.php">Home</a>
+    </nav>
+    <div class="nav-right">
+        <a href="login.php" class="btn-outline">Login</a>
+    </div>
+</header>
+
+<div class="dashboard-container" style="max-width:600px; margin:2rem auto;">
+
+    <?php if (isset($_SESSION['register_success'])): ?>
+        <div class="success-message">
+            <?= htmlspecialchars($_SESSION['register_success']) ?>
         </div>
-        <nav class="nav-links">
-            <a href="../index.php">Home</a>
-        </nav>
-        <div class="nav-right">
-            <a href="../login.php" class="btn-outline logout-btn">Login</a>
+        <?php unset($_SESSION['register_success']); ?>
+    <?php endif; ?>
+
+    <?php if ($error): ?>
+        <div class="error-message">
+            <?= htmlspecialchars($error) ?>
         </div>
-    </header>
-    <div class="form-container">
+    <?php endif; ?>
+
+    <div class="form-container" style="background:white; padding:2.5rem; border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,0.1);">
         <h2>New Customer Registration</h2>
         <form method="POST" action="">
             <input type="hidden" name="action" value="add">
 
             <div class="form-group">
-                <label>Full Name</label>
+                <label>Full Name *</label>
                 <input type="text" name="cname" required placeholder="e.g. Chan Tai Man">
             </div>
 
             <div class="form-group">
-                <label>Password</label>
+                <label>Password *</label>
                 <input type="password" name="cpass" required minlength="6" placeholder="Minimum 6 characters">
             </div>
+
             <div class="form-group">
-                <label>Address</label>
-                <input type="text" name="caddress" placeholder="e.g. 123 Main Street">
+                <label>Address *</label>
+                <input type="text" name="caddress" required placeholder="e.g. Flat 12A, Tower 3, Kowloon">
             </div>
+
+            <div class="form-group">
+                <label>Email *</label>
+                <input type="email" name="cemail" required placeholder="e.g. user@example.com">
+            </div>
+
             <div class="form-group">
                 <label>Phone Number (optional)</label>
-                <input type="text" name="ctel" placeholder="e.g. 9123 4567">
+                <input type="tel" name="ctel" placeholder="e.g. 9123 4567">
             </div>
-            <button type="submit" class="btn-login" style="width:auto; padding:0.9rem 2rem;">
+
+            <div class="form-group">
+                <label>Company (optional)</label>
+                <input type="text" name="ccompany" placeholder="e.g. ABC Company">
+            </div>
+
+            <button type="submit" class="btn-login" style="width:100%; margin-top:1.5rem;">
                 <i class="fas fa-user-plus"></i> Register
             </button>
         </form>
+
+        <p style="text-align:center; margin-top:1.5rem;">
+            Already have an account? 
+            <a href="login.php" style="color:#e67e22; font-weight:500;">Login here</a>
+        </p>
     </div>
 
-</body>
+</div>
 
+</body>
 </html>
