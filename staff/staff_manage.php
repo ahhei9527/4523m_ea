@@ -121,6 +121,7 @@ mysqli_close($conn);
             <a href="orders_manage.php">Orders</a>
             <a href="report.php">Reports</a>
             <a href="staff_manage.php" class="active">Manage Staff</a>
+            <a href="customers_view.php">Customers</a>
         </nav>
         <div class="nav-right">
             <span style="color:#ecf0f1; margin-right:1.2rem;">

@@ -641,3 +641,39 @@ a:active {
 .cart-table tfoot td:first-child {
     text-align: right;
 }
+
+.cart-link {
+    position: relative;
+    text-decoration: none;
+    color: white;
+}
+
+.cart-count {
+    position: absolute;
+    top: -8px;
+    right: -12px;
+    background: #e74c3c;
+    color: white;
+    font-size: 0.7rem;
+    font-weight: bold;
+    width: 20px;
+    height: 20px;
+    line-height: 20px;
+    text-align: center;
+    border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.badge {
+    padding: 0.5em 1em;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.bg-danger    { background: #dc3545; color: white; }
+.bg-warning   { background: #ffc107; color: black; }
+.bg-info      { background: #17a2b8; color: white; }
+.bg-primary   { background: #007bff; color: white; }
+.bg-secondary { background: #6c757d; color: white; }
+.bg-success   { background: #28a745; color: white; }

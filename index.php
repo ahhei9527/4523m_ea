@@ -58,7 +58,7 @@
         <div class="nav-right">
             <a href="customer/cart.php" class="cart-icon">
                 <i class="fas fa-shopping-cart"></i>
-                <span class="cart-count">0</span>
+                <span class="cart-count"><?= array_sum($_SESSION['cart'] ?? []) ?></span>
             </a>
             <button class="menu-toggle" id="menuToggle">
                 <i class="fas fa-bars"></i>

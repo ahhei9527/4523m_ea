@@ -131,7 +131,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <td>
                                 <div style="display:flex; align-items:center; gap:1rem;">
                                     <!-- Placeholder image -->
-                                    <img src="../images/furniture-placeholder.jpg" alt="<?= htmlspecialchars($item['fname']) ?>" 
+                                    <img src="../images/<?= htmlspecialchars($item['fname']) ?>.png" alt="<?= htmlspecialchars($item['fname']) ?>" 
                                          style="width:80px; height:80px; object-fit:cover; border-radius:6px;">
                                     <strong><?= htmlspecialchars($item['fname']) ?></strong>
                                 </div>
