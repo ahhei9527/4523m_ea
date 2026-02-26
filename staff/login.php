@@ -37,7 +37,7 @@
 
             // Query by sname (username)
             $stmt = $conn->prepare("
-            SELECT sid, sname, spassword, srole , sstatus
+            SELECT sid, sname, spassword, srole
             FROM Staffs 
             WHERE sname = ?
         ");
@@ -51,21 +51,37 @@
             } else {
                 $row = $result->fetch_assoc();
 
-                // Plain text comparison (temporary — upgrade to hashed later)
-                if ($row['sstatus'] === 0) {
-                    $error = "This staff account is inactive.";
-                } else {
-                    if (password_verify($spassword, $row['spassword'])) {
-                        // Success
-                        $_SESSION['staff_id'] = $row['sid'];
-                        $_SESSION['staff_name'] = $row['sname'];
-                        $_SESSION['staff_role'] = $row['srole'];
+                $stored = $row['spassword'];
 
-                        header("Location: dashboard.php");
-                        exit();
-                    } else {
-                        $error = "Incorrect password.";
+                if ($stored === $spassword || password_verify($spassword, $stored)) {
+                    // Login OK
+    
+                    // If it was plain text → upgrade it now to hashed
+                    if (!password_verify($spassword, $stored)) {
+                        // It was plain text → hash it
+                        $newHash = password_hash($spassword, PASSWORD_ARGON2ID, [
+                            'memory_cost' => 65536,  // ≈64 MB
+                            'time_cost' => 4,
+                            'threads' => 1
+                        ]);
+
+                        $update = $conn->prepare("UPDATE Staffs SET spassword = ? WHERE sid = ?");
+                        $update->bind_param("si", $newHash, $row['sid']);
+                        $update->execute();
+                        $update->close();
+
+                        // Optional: log or notify yourself that upgrade happened
                     }
+
+                    // Proceed with session
+                    $_SESSION['staff_id'] = $row['sid'];
+                    $_SESSION['staff_name'] = $row['sname'];
+                    $_SESSION['staff_role'] = $row['srole'];
+
+                    header("Location: dashboard.php");
+                    exit();
+                } else {
+                    $error = "Incorrect password.";
                 }
 
                 $stmt->close();

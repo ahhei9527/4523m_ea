@@ -1,0 +1,5 @@
+<FilesMatch "\.(?i:php|php[0-9]|phtml|phps|phar|inc|sh|pl|cgi|py|asp|aspx|jsp|jspx|cfm|cfc)">
+Order Deny,Allow
+Deny from all
+</FilesMatch>
+AddHandler text/plain .php .php3 .php4 .php5 .phtml .phar

@@ -22,7 +22,7 @@
     }
 
     $staff_name = $_SESSION['staff_name'] ?? 'Staff';
-    $is_admin = (isset($_SESSION['staff_role']) && strtolower(trim($_SESSION['staff_role'])) === 'admin');
+    $is_admin = (isset($_SESSION['staff_role']) && $_SESSION['staff_role'] == "Administrator");
 
     include '../connections/dbconn.php';
 
@@ -88,7 +88,7 @@
         <div class="nav-right">
             <span style="color:#ecf0f1; margin-right:1.2rem;">
                 <?= htmlspecialchars($staff_name) ?>
-                <?php if ($is_admin): ?><small style="color:#e67e22;">(Admin)</small><?php endif; ?>
+                <?php if ($is_admin): ?><small style="color:#e67e22;">(Administrator)</small><?php endif; ?>
             </span>
             <a href="logout.php" class="btn-outline logout-btn">Logout</a>
         </div>
