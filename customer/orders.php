@@ -1,67 +1,3 @@
-<?php
-// customer/orders.php
-
-session_start();
-
-if (!isset($_SESSION['customer_id'])) {
-    header("Location: login.php");
-    exit();
-}
-
-include '../connections/dbconn.php';
-
-$customer_id = $_SESSION['customer_id'];
-
-// Fetch all orders for this customer
-$orders = [];
-$stmt = $conn->prepare("
-    SELECT oid, odate, ototalamount, odeliverydate, odeliveraddress, ostatus
-    FROM Orders
-    WHERE cid = ?
-    ORDER BY odate DESC
-");
-$stmt->bind_param("i", $customer_id);
-$stmt->execute();
-$result = $stmt->get_result();
-
-while ($row = $result->fetch_assoc()) {
-    $orders[] = $row;
-}
-$stmt->close();
-
-// Status labels and colors
-$status_labels = [
-    0 => ['Rejected', 'danger'],
-    1 => ['Open', 'warning'],
-    2 => ['Processing', 'info'],
-    3 => ['Approved', 'primary'],
-    4 => ['Pending Delivery', 'secondary'],
-    5 => ['Completed', 'success']
-];
-
-// Fetch order items for each order
-foreach ($orders as &$order) {
-    $order_id = $order['oid'];
-    $items_stmt = $conn->prepare("
-        SELECT of.oqty, f.fname, f.fprice
-        FROM OrderFurnitures of
-        JOIN Furnitures f ON of.fid = f.fid
-        WHERE of.oid = ?
-    ");
-    $items_stmt->bind_param("i", $order_id);
-    $items_stmt->execute();
-    $items_result = $items_stmt->get_result();
-
-    $order['items'] = [];
-    while ($item = $items_result->fetch_assoc()) {
-        $order['items'][] = $item;
-    }
-    $items_stmt->close();
-}
-
-mysqli_close($conn);
-?>
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -74,7 +10,70 @@ mysqli_close($conn);
 </head>
 
 <body>
+    <?php
+    // customer/orders.php
+    
+    session_start();
 
+    if (!isset($_SESSION['customer_id'])) {
+        header("Location: login.php");
+        exit();
+    }
+
+    include '../connections/dbconn.php';
+
+    $customer_id = $_SESSION['customer_id'];
+
+    // Fetch all orders for this customer
+    $orders = [];
+    $stmt = $conn->prepare("
+    SELECT oid, odate, ototalamount, odeliverydate, odeliveraddress, ostatus
+    FROM Orders
+    WHERE cid = ?
+    ORDER BY odate DESC
+");
+    $stmt->bind_param("i", $customer_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    while ($row = $result->fetch_assoc()) {
+        $orders[] = $row;
+    }
+    $stmt->close();
+
+    // Status labels and colors
+    $status_labels = [
+        0 => ['Rejected', 'danger'],
+        1 => ['Open', 'warning'],
+        2 => ['Processing', 'info'],
+        3 => ['Approved', 'primary'],
+        4 => ['Pending Delivery', 'secondary'],
+        5 => ['Completed', 'success']
+    ];
+
+    // Fetch order items for each order
+    foreach ($orders as $key => $dummy) {
+        $order_id = $orders[$key]['oid'];
+
+        $items_stmt = $conn->prepare("
+        SELECT of.oqty, f.fname, f.fprice
+        FROM OrderFurnitures of
+        JOIN Furnitures f ON of.fid = f.fid
+        WHERE of.oid = ?
+    ");
+        $items_stmt->bind_param("i", $order_id);
+        $items_stmt->execute();
+        $items_result = $items_stmt->get_result();
+
+        $orders[$key]['items'] = [];
+        while ($item = $items_result->fetch_assoc()) {
+            $orders[$key]['items'][] = $item;
+        }
+        $items_stmt->close();
+    }
+
+    mysqli_close($conn);
+    ?>
     <header class="navbar">
         <div class="logo">
             <h2>Premium Living</h2>
@@ -90,7 +89,7 @@ mysqli_close($conn);
             <a href="logout.php" class="btn-outline">Logout</a>
         </div>
         <div class="nav-right">
-            <a href="customer/cart.php" class="cart-icon">
+            <a href="../customer/cart.php" class="cart-icon">
                 <i class="fas fa-shopping-cart"></i>
                 <span class="cart-count"><?= array_sum($_SESSION['cart'] ?? []) ?></span>
             </a>
@@ -178,9 +177,9 @@ mysqli_close($conn);
             <div class="footer-section">
                 <h3>Quick Links</h3>
                 <ul>
-                    <li><a href="customer/shop.php">Shop</a></li>
-                    <li><a href="customer/orders.php">Orders</a></li>
-                    <li><a href="customer/profile.php">My Account</a></li>
+                    <li><a href="../customer/shop.php">Shop</a></li>
+                    <li><a href="../customer/orders.php">Orders</a></li>
+                    <li><a href="../customer/profile.php">My Account</a></li>
                 </ul>
             </div>
             <div class="footer-section">

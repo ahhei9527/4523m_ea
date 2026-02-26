@@ -99,3 +99,30 @@ document.addEventListener('click', function (e) {
         e.target.closest('.material-row').remove();
     }
 });
+
+// Dynamic material rows
+document.getElementById('add-material-btn')?.addEventListener('click', function () {
+    const container = document.getElementById('materials-container');
+    const row = document.createElement('div');
+    row.className = 'material-row';
+    row.style.cssText = 'display:flex; gap:1rem; margin-bottom:1rem; align-items:center;';
+
+    row.innerHTML = `
+        <select name="materials[]" style="flex:1; padding:0.6rem;">
+            <option value="">Select Material</option>
+            <?php foreach ($materials as $m): ?>
+                <option value="<?= $m['mid'] ?>"><?= addslashes(htmlspecialchars($m['mname'])) ?> (<?= addslashes(htmlspecialchars($m['munit'])) ?>)</option>
+            <?php endforeach; ?>
+        </select>
+        <input type="number" name="pmqty[]" min="1" placeholder="Qty" style="width:100px; padding:0.6rem;">
+        <button type="button" class="btn-outline remove-material" style="color:#dc3545;">Remove</button>
+    `;
+
+    container.appendChild(row);
+});
+
+document.addEventListener('click', function (e) {
+    if (e.target.classList.contains('remove-material')) {
+        e.target.closest('.material-row').remove();
+    }
+});

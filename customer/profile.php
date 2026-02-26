@@ -1,104 +1,3 @@
-<?php
-// customer/profile.php
-
-session_start();
-
-if (!isset($_SESSION['customer_id'])) {
-    header("Location: login.php");
-    exit();
-}
-
-include '../connections/dbconn.php';
-
-$customer_id = $_SESSION['customer_id'];
-$message = '';
-$error = '';
-
-// Fetch current customer info
-$stmt = $conn->prepare("
-    SELECT cname, cemail, ctel, caddr, company 
-    FROM Customers 
-    WHERE cid = ?
-");
-$stmt->bind_param("i", $customer_id);
-$stmt->execute();
-$result = $stmt->get_result();
-$customer = $result->fetch_assoc();
-$stmt->close();
-
-// Handle profile update
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])) {
-    $cname = trim($_POST['cname'] ?? '');
-    $ctel = trim($_POST['ctel'] ?? '');
-    $caddr = trim($_POST['caddr'] ?? '');
-    $company = trim($_POST['company'] ?? '');
-
-    if (empty($cname)) {
-        $error = "Name is required.";
-    } else {
-        $update = $conn->prepare("
-            UPDATE Customers 
-            SET cname = ?, ctel = ?, caddr = ?, company = ?
-            WHERE cid = ?
-        ");
-        $update->bind_param("ssssi", $cname, $ctel, $caddr, $company, $customer_id);
-
-        if ($update->execute()) {
-            $_SESSION['customer_name'] = $cname;  // Update session
-            $message = "Profile updated successfully.";
-        } else {
-            $error = "Update failed: " . $conn->error;
-        }
-        $update->close();
-    }
-}
-
-// Handle password change
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['change_password'])) {
-    $old_pass = trim($_POST['old_password'] ?? '');
-    $new_pass = trim($_POST['new_password'] ?? '');
-    $confirm = trim($_POST['confirm_password'] ?? '');
-
-    if (empty($old_pass) || empty($new_pass) || empty($confirm)) {
-        $error = "All password fields are required.";
-    } elseif ($new_pass !== $confirm) {
-        $error = "New passwords do not match.";
-    } elseif (strlen($new_pass) < 8) {
-        $error = "New password must be at least 8 characters.";
-    } else {
-        // Verify old password
-        $check = $conn->prepare("SELECT cpassword FROM Customers WHERE cid = ?");
-        $check->bind_param("i", $customer_id);
-        $check->execute();
-        $result = $check->get_result();
-        $row = $result->fetch_assoc();
-        $check->close();
-
-        if (!$row || !password_verify($old_pass, $row['cpassword'])) {
-            $error = "Current password is incorrect.";
-        } else {
-            $hashed = password_hash($new_pass, PASSWORD_DEFAULT);
-
-            $update = $conn->prepare("UPDATE Customers SET cpassword = ? WHERE cid = ?");
-            $update->bind_param("si", $hashed, $customer_id);
-
-            if ($update->execute()) {
-                $message = "Password changed successfully. Please log in again.";
-                // Optional: force logout
-                session_destroy();
-                header("Location: login.php");
-                exit(); // Ensure no further processing occurs
-            } else {
-                $error = "Error changing password: " . $conn->error;
-            }
-            $update->close();
-        }
-    }
-}
-
-mysqli_close($conn);
-?>
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -111,7 +10,106 @@ mysqli_close($conn);
 </head>
 
 <body>
+    <?php
+    // customer/profile.php
+    
+    session_start();
 
+    if (!isset($_SESSION['customer_id'])) {
+        header("Location: login.php");
+        exit();
+    }
+
+    include '../connections/dbconn.php';
+
+    $customer_id = $_SESSION['customer_id'];
+    $message = '';
+    $error = '';
+
+    // Fetch current customer info
+    $stmt = $conn->prepare("
+    SELECT cname, cemail, ctel, caddr, company 
+    FROM Customers 
+    WHERE cid = ?
+");
+    $stmt->bind_param("i", $customer_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $customer = $result->fetch_assoc();
+    $stmt->close();
+
+    // Handle profile update
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])) {
+        $cname = trim($_POST['cname'] ?? '');
+        $ctel = trim($_POST['ctel'] ?? '');
+        $caddr = trim($_POST['caddr'] ?? '');
+        $company = trim($_POST['company'] ?? '');
+
+        if (empty($cname)) {
+            $error = "Name is required.";
+        } else {
+            $update = $conn->prepare("
+            UPDATE Customers 
+            SET cname = ?, ctel = ?, caddr = ?, company = ?
+            WHERE cid = ?
+        ");
+            $update->bind_param("ssssi", $cname, $ctel, $caddr, $company, $customer_id);
+
+            if ($update->execute()) {
+                $_SESSION['customer_name'] = $cname;  // Update session
+                $message = "Profile updated successfully.";
+            } else {
+                $error = "Update failed: " . $conn->error;
+            }
+            $update->close();
+        }
+    }
+
+    // Handle password change
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['change_password'])) {
+        $old_pass = trim($_POST['old_password'] ?? '');
+        $new_pass = trim($_POST['new_password'] ?? '');
+        $confirm = trim($_POST['confirm_password'] ?? '');
+
+        if (empty($old_pass) || empty($new_pass) || empty($confirm)) {
+            $error = "All password fields are required.";
+        } elseif ($new_pass !== $confirm) {
+            $error = "New passwords do not match.";
+        } elseif (strlen($new_pass) < 8) {
+            $error = "New password must be at least 8 characters.";
+        } else {
+            // Verify old password
+            $check = $conn->prepare("SELECT cpassword FROM Customers WHERE cid = ?");
+            $check->bind_param("i", $customer_id);
+            $check->execute();
+            $result = $check->get_result();
+            $row = $result->fetch_assoc();
+            $check->close();
+
+            if (!$row || !password_verify($old_pass, $row['cpassword'])) {
+                $error = "Current password is incorrect.";
+            } else {
+                $hashed = password_hash($new_pass, PASSWORD_DEFAULT);
+
+                $update = $conn->prepare("UPDATE Customers SET cpassword = ? WHERE cid = ?");
+                $update->bind_param("si", $hashed, $customer_id);
+
+                if ($update->execute()) {
+                    $message = "Password changed successfully. Please log in again.";
+                    // Optional: force logout
+                    session_destroy();
+                    header("Location: login.php");
+                    exit(); // Ensure no further processing occurs
+                } else {
+                    $error = "Error changing password: " . $conn->error;
+                }
+                $update->close();
+            }
+        }
+    }
+
+    mysqli_close($conn);
+    ?>
     <header class="navbar">
         <div class="logo">
             <h2>Premium Living</h2>
@@ -127,7 +125,7 @@ mysqli_close($conn);
             <a href="logout.php" class="btn-outline">Logout</a>
         </div>
         <div class="nav-right">
-            <a href="customer/cart.php" class="cart-icon">
+            <a href="../customer/cart.php" class="cart-icon">
                 <i class="fas fa-shopping-cart"></i>
                 <span class="cart-count">
                     <?= array_sum($_SESSION['cart'] ?? []) ?>
@@ -235,9 +233,9 @@ mysqli_close($conn);
             <div class="footer-section">
                 <h3>Quick Links</h3>
                 <ul>
-                    <li><a href="customer/shop.php">Shop</a></li>
-                    <li><a href="customer/orders.php">Orders</a></li>
-                    <li><a href="customer/profile.php">My Account</a></li>
+                    <li><a href="../customer/shop.php">Shop</a></li>
+                    <li><a href="../customer/orders.php">Orders</a></li>
+                    <li><a href="../customer/profile.php">My Account</a></li>
                 </ul>
             </div>
             <div class="footer-section">

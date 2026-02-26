@@ -133,6 +133,31 @@
     </div>
 
 </div>
-
+<footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Premium Living</h3>
+                <p>Bringing elegance and comfort to your home since 2015.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="../customer/shop.php">Shop</a></li>
+                    <li><a href="../customer/orders.php">Orders</a></li>
+                    <li><a href="../customer/profile.php">My Account</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Contact</h3>
+                <p>Email: support@premiumliving.com</p>
+                <p>Phone: +852 1234 5678</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>©
+                <?= date("Y") ?> Premium Living Furniture Co. Ltd. All rights reserved.
+            </p>
+        </div>
+    </footer>
 </body>
 </html>
