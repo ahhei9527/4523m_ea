@@ -21,7 +21,7 @@
     }
     $staff_name = $_SESSION['staff_name'] ?? 'Staff';
     $is_admin = (isset($_SESSION['staff_role']) && $_SESSION['staff_role'] == "Administrator");
-    
+
     include '../connections/dbconn.php';
 
     $status_options = [
@@ -40,23 +40,67 @@
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_status'])) {
         $oid = (int) $_POST['oid'];
         $new_status = (int) $_POST['ostatus'];
-        $reject_reason = trim($_POST['reject_reason'] ?? '');
+        mysqli_begin_transaction($conn);
 
-        if ($new_status === 0 && empty($reject_reason)) {
-            $error = "Reject reason is required when setting status to Rejected.";
-        } else {
-            $stmt = $conn->prepare("
-            UPDATE Orders 
-            SET ostatus = ?, reject_reason = ?
-            WHERE oid = ?
-        ");
-            $stmt->bind_param("isi", $new_status, $reject_reason, $oid);
-            if ($stmt->execute()) {
-                $message = "Order #$oid updated to " . $status_options[$new_status] . ".";
-            } else {
-                $error = "Update failed: " . $conn->error;
+        try {
+            // 1. Get current status
+            $prev_stmt = $conn->prepare("SELECT ostatus FROM Orders WHERE oid = ?");
+            $prev_stmt->bind_param("i", $oid);
+            $prev_stmt->execute();
+            $prev_result = $prev_stmt->get_result();
+            $old_status = $prev_result->fetch_assoc()['ostatus'] ?? -1;
+            $prev_stmt->close();
+
+            // 2. Update order
+            $update_stmt = $conn->prepare("
+                UPDATE Orders 
+                SET ostatus = ?
+                WHERE oid = ?
+            ");
+            $update_stmt->bind_param("ii", $new_status, $oid);
+            $update_stmt->execute();
+            if ($update_stmt->affected_rows === 0) {
+                throw new Exception("Order #$oid not found or status unchanged.");
             }
-            $stmt->close();
+            $update_stmt->close();
+
+            // 3. Restore stock only if newly rejected
+            if ($new_status === 0 && $old_status !== 0) {
+                $items_stmt = $conn->prepare("
+                    SELECT of.fid, of.oqty, fm.mid, fm.pmqty
+                    FROM OrderFurnitures of
+                    JOIN FurnitureMaterials fm ON of.fid = fm.fid
+                    WHERE of.oid = ?
+                ");
+                $items_stmt->bind_param("i", $oid);
+                $items_stmt->execute();
+                $items_result = $items_stmt->get_result();
+
+                while ($item = $items_result->fetch_assoc()) {
+                    $qty_to_restore = $item['oqty'] * $item['pmqty'];
+
+                    $restore_stmt = $conn->prepare("
+                        UPDATE Materials 
+                        SET mqty = mqty + ? 
+                        WHERE mid = ?
+                    ");
+                    $restore_stmt->bind_param("ii", $qty_to_restore, $item['mid']);
+                    $restore_stmt->execute();
+                    $restore_stmt->close();
+                }
+                $items_stmt->close();
+            }
+
+            mysqli_commit($conn);
+
+            $message = "Order #$oid updated to " . $status_options[$new_status] . ".";
+            if ($new_status === 0 && $old_status !== 0) {
+                $message .= " Material stock restored.";
+            }
+
+        } catch (Exception $e) {
+            mysqli_rollback($conn);
+            $error = "Operation failed for order #$oid: " . $e->getMessage();
         }
     }
 
@@ -210,14 +254,6 @@
                                 <?php endforeach; ?>
                             </select>
                         </div>
-
-                        <div class="form-group" style="flex:1; min-width:200px;">
-                            <label>Reject Reason (if Rejected)</label>
-                            <input type="text" name="reject_reason" placeholder="Reason (required if Rejected)"
-                                value="<?= htmlspecialchars($order['reject_reason'] ?? '') ?>"
-                                style="width:100%; padding:0.6rem;">
-                        </div>
-
                         <button type="submit" class="btn-primary" style="padding:0.6rem 1.5rem;">
                             Update Status
                         </button>

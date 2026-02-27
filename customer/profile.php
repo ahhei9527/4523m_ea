@@ -28,7 +28,7 @@
 
     // Fetch current customer info
     $stmt = $conn->prepare("
-    SELECT cname, cemail, ctel, caddr, company 
+    SELECT cname, ctel, caddr, company 
     FROM Customers 
     WHERE cid = ?
 ");
@@ -121,7 +121,7 @@
             <a href="profile.php" class="active">Profile</a>
         </nav>
         <div class="nav-right">
-            <span>Welcome, <?= htmlspecialchars($_SESSION['customer_name'] ?? 'Guest') ?></span>
+            <span>Welcome, <?= htmlspecialchars($_SESSION['customer_name'] ?? 'Guest') ?>, <?= htmlspecialchars($_SESSION['company'] ?? '') ?></span>
             <a href="logout.php" class="btn-outline">Logout</a>
         </div>
         <div class="nav-right">
@@ -163,11 +163,6 @@
                 <div class="form-group">
                     <label>Full Name</label>
                     <input type="text" name="cname" value="<?= htmlspecialchars($customer['cname'] ?? '') ?>" required>
-                </div>
-
-                <div class="form-group">
-                    <label>Email (cannot change)</label>
-                    <input type="email" value="<?= htmlspecialchars($customer['cemail'] ?? '') ?>" disabled>
                 </div>
 
                 <div class="form-group">

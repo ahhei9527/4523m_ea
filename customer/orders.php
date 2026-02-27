@@ -85,13 +85,15 @@
             <a href="profile.php">Profile</a>
         </nav>
         <div class="nav-right">
-            <span>Welcome, <?= htmlspecialchars($_SESSION['customer_name'] ?? 'Guest') ?></span>
+            <span>Welcome, <?= htmlspecialchars($_SESSION['customer_name'] ?? 'Guest') ?>, <?= htmlspecialchars($_SESSION['company'] ?? '') ?></span>
             <a href="logout.php" class="btn-outline">Logout</a>
         </div>
         <div class="nav-right">
             <a href="../customer/cart.php" class="cart-icon">
                 <i class="fas fa-shopping-cart"></i>
-                <span class="cart-count"><?= array_sum($_SESSION['cart'] ?? []) ?></span>
+                <span class="cart-count">
+                    <?= array_sum($_SESSION['cart'] ?? []) ?>
+                </span>
             </a>
             <button class="menu-toggle" id="menuToggle">
                 <i class="fas fa-bars"></i>

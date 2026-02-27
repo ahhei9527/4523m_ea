@@ -15,12 +15,6 @@
     
     session_start();
 
-    // If not logged in, redirect to login
-    if (!isset($_SESSION['customer_id'])) {
-        header("Location: login.php");
-        exit();
-    }
-
     include '../connections/dbconn.php';
 
     // Cart is stored in session as array [fid => quantity]
@@ -94,11 +88,28 @@
             <a href="shop.php">Shop</a>
             <a href="orders.php">My Orders</a>
             <a href="profile.php">Profile</a>
-            <a href="cart.php" class="active">Cart</a>
         </nav>
         <div class="nav-right">
-            <span>Welcome, <?= htmlspecialchars($_SESSION['customer_name'] ?? 'Guest') ?></span>
-            <a href="logout.php" class="btn-outline">Logout</a>
+            <?php if (isset($_SESSION['customer_id'])): ?>
+                <span>Welcome,
+                    <?= htmlspecialchars($_SESSION['customer_name'] ?? 'Customer') ?>
+                    <?= !empty($_SESSION['company']) ? ', ' . htmlspecialchars($_SESSION['company']) : '' ?>
+                </span>
+                <a href="logout.php" class="btn-outline">Logout</a>
+            <?php else: ?>
+                <a href="../login.php" class="btn-outline">Login</a>
+            <?php endif; ?>
+        </div>
+        <div class="nav-right">
+            <a href="cart.php" class="cart-icon">
+                <i class="fas fa-shopping-cart"></i>
+                <span class="cart-count">
+                    <?= array_sum($_SESSION['cart'] ?? []) ?>
+                </span>
+            </a>
+            <button class="menu-toggle" id="menuToggle">
+                <i class="fas fa-bars"></i>
+            </button>
         </div>
     </header>
 

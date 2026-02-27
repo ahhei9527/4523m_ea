@@ -26,6 +26,13 @@
 
     include '../connections/dbconn.php';
 
+    $staff_name = $_SESSION['staff_name'] ?? 'Staff';
+    $is_admin = (isset($_SESSION['staff_role']) && $_SESSION['staff_role'] == "Administrator");
+    $message = '';
+    $error = '';
+
+    include '../connections/dbconn.php';
+
     $message = '';
     $error = '';
 
@@ -59,8 +66,8 @@
         </nav>
         <div class="nav-right">
             <span style="color:#ecf0f1; margin-right:1.2rem;">
-                <?= htmlspecialchars($_SESSION['staff_name'] ?? 'Admin') ?>
-                (<?= htmlspecialchars(ucfirst($_SESSION['staff_role'] ?? 'Staff')) ?>)
+                <?= htmlspecialchars($staff_name) ?>
+                <?php if ($is_admin): ?><small style="color:#e67e22;">(Administrator)</small><?php endif; ?>
             </span>
             <a href="logout.php" class="btn-outline logout-btn">Logout</a>
         </div>
@@ -91,7 +98,6 @@
                         <tr>
                             <th>CID</th>
                             <th>Name</th>
-                            <th>Email</th>
                             <th>Phone</th>
                             <th>Company</th>
                             <th>Action</th>

@@ -275,12 +275,12 @@
                                     $max_units = PHP_INT_MAX;  // very large number as starting point
                             
                                     $stmt = $conn->prepare("
-        SELECT fm.pmqty, m.mqty
-        FROM FurnitureMaterials fm
-        JOIN Materials m ON fm.mid = m.mid
-        WHERE fm.fid = ?
-          AND fm.pmqty > 0
-    ");
+                                        SELECT fm.pmqty, m.mqty
+                                        FROM FurnitureMaterials fm
+                                        JOIN Materials m ON fm.mid = m.mid
+                                        WHERE fm.fid = ?
+                                        AND fm.pmqty > 0
+                                    ");
                                     $stmt->bind_param("i", $f['fid']);
                                     $stmt->execute();
                                     $result = $stmt->get_result();
