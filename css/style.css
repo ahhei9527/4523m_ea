@@ -455,7 +455,7 @@ a:active {
     background: white;
     border-radius: 12px;
     padding: 1.8rem;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
     text-align: center;
     transition: transform 0.3s ease;
 }
@@ -492,14 +492,14 @@ a:active {
     background: white;
     border-radius: 12px;
     padding: 2rem 1.5rem;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
     text-align: center;
     transition: all 0.3s ease;
 }
 
 .action-card:hover {
     transform: translateY(-8px);
-    box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
 }
 
 .action-icon {
@@ -544,7 +544,7 @@ a:active {
         flex-direction: column;
         text-align: center;
     }
-    
+
     .stats-grid,
     .actions-grid {
         grid-template-columns: 1fr;
@@ -555,7 +555,7 @@ a:active {
     background: white;
     padding: 2rem;
     border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
     margin-bottom: 2.5rem;
 }
 
@@ -573,7 +573,7 @@ a:active {
     width: 100%;
     border-collapse: collapse;
     background: white;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
     border-radius: 8px;
     overflow: hidden;
 }
@@ -661,7 +661,7 @@ a:active {
     line-height: 20px;
     text-align: center;
     border-radius: 50%;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .badge {
@@ -671,9 +671,70 @@ a:active {
     font-weight: 500;
 }
 
-.bg-danger    { background: #dc3545; color: white; }
-.bg-warning   { background: #ffc107; color: black; }
-.bg-info      { background: #17a2b8; color: white; }
-.bg-primary   { background: #007bff; color: white; }
-.bg-secondary { background: #6c757d; color: white; }
-.bg-success   { background: #28a745; color: white; }
+.bg-danger {
+    background: #dc3545;
+    color: white;
+}
+
+.bg-warning {
+    background: #ffc107;
+    color: black;
+}
+
+.bg-info {
+    background: #17a2b8;
+    color: white;
+}
+
+.bg-primary {
+    background: #007bff;
+    color: white;
+}
+
+.bg-secondary {
+    background: #6c757d;
+    color: white;
+}
+
+.bg-success {
+    background: #28a745;
+    color: white;
+}
+
+.product-detail {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+.product-image {
+    max-width: 100%;
+    height: auto;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.product-info {
+    padding: 2rem;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+.price {
+    font-size: 2.2rem;
+    color: #e67e22;
+    font-weight: bold;
+}
+
+.materials-list {
+    margin-top: 1.5rem;
+}
+
+.error-box {
+    background: #f8d7da;
+    color: #721c24;
+    padding: 1rem;
+    border-radius: 8px;
+    text-align: center;
+}

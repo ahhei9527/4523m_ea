@@ -121,8 +121,15 @@
             <a href="profile.php" class="active">Profile</a>
         </nav>
         <div class="nav-right">
-            <span>Welcome, <?= htmlspecialchars($_SESSION['customer_name'] ?? 'Guest') ?>, <?= htmlspecialchars($_SESSION['company'] ?? '') ?></span>
-            <a href="logout.php" class="btn-outline">Logout</a>
+            <?php if (isset($_SESSION['customer_id'])): ?>
+                <span>Welcome,
+                    <?= htmlspecialchars($_SESSION['customer_name'] ?? 'Customer') ?>
+                    <?= !empty($_SESSION['company']) ? ', ' . htmlspecialchars($_SESSION['company']) : '' ?>
+                </span>
+                <a href="logout.php" class="btn-outline">Logout</a>
+            <?php else: ?>
+                <a href="../login.php" class="btn-outline">Login</a>
+            <?php endif; ?>
         </div>
         <div class="nav-right">
             <a href="../customer/cart.php" class="cart-icon">

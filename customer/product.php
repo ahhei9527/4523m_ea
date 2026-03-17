@@ -7,45 +7,6 @@
     <title><?= htmlspecialchars($product['fname'] ?? 'Product Details') ?> - Premium Living</title>
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-    <style>
-        .product-detail {
-            max-width: 1200px;
-            margin: 2rem auto;
-            padding: 0 1rem;
-        }
-
-        .product-image {
-            max-width: 100%;
-            height: auto;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        .product-info {
-            padding: 2rem;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-        }
-
-        .price {
-            font-size: 2.2rem;
-            color: #e67e22;
-            font-weight: bold;
-        }
-
-        .materials-list {
-            margin-top: 1.5rem;
-        }
-
-        .error-box {
-            background: #f8d7da;
-            color: #721c24;
-            padding: 1rem;
-            border-radius: 8px;
-            text-align: center;
-        }
-    </style>
 </head>
 
 <body>
@@ -115,8 +76,15 @@
             <a href="profile.php">Profile</a>
         </nav>
         <div class="nav-right">
-            <span>Welcome, <?= htmlspecialchars($_SESSION['customer_name'] ?? 'Guest') ?>, <?= htmlspecialchars($_SESSION['company'] ?? '') ?></span>
-            <a href="logout.php" class="btn-outline">Logout</a>
+            <?php if (isset($_SESSION['customer_id'])): ?>
+                <span>Welcome,
+                    <?= htmlspecialchars($_SESSION['customer_name'] ?? 'Customer') ?>
+                    <?= !empty($_SESSION['company']) ? ', ' . htmlspecialchars($_SESSION['company']) : '' ?>
+                </span>
+                <a href="logout.php" class="btn-outline">Logout</a>
+            <?php else: ?>
+                <a href="../login.php" class="btn-outline">Login</a>
+            <?php endif; ?>
         </div>
         <div class="nav-right">
             <a href="../customer/cart.php" class="cart-icon">
@@ -146,8 +114,9 @@
                 <!-- Image -->
                 <div style="flex: 1; min-width: 300px;">
                     <?php if (!empty($product['fname'])): ?>
-                        <img src="../images/<?= htmlspecialchars($product['fname']) ?>.png" alt="<?= htmlspecialchars($product['fname']) ?>"
-                            class="product-image" onerror="this.src='/images/placeholder.jpg';">
+                        <img src="../images/<?= htmlspecialchars($product['fname']) ?>.png"
+                            alt="<?= htmlspecialchars($product['fname']) ?>" class="product-image"
+                            onerror="this.src='/images/placeholder.jpg';">
                     <?php else: ?>
                         <div
                             style="background:#f0f0f0; height:400px; display:flex; align-items:center; justify-content:center; border-radius:12px;">
