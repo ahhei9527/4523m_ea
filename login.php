@@ -11,12 +11,11 @@
 
 <body>
     <?php
-    session_start();
-    if (isset($_SESSION['customer_id'])) {
+    if (isset($_cookie['customer_id'])) {
         header("Location: ../index.php");  // or "shop.php" if you have one
         exit();
     }
-    if(isset($_SESSION['staff_id'])) {
+    if(isset($_cookie['staff_id'])) {
         header("Location: staff/dashboard.php");
         exit();
     }

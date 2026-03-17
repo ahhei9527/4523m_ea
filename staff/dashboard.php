@@ -12,17 +12,13 @@
 <body>
     <?php
     // staff/dashboard.php
-    
-    session_start();
-
     // Security: Redirect if not logged in as staff
-    if (!isset($_SESSION['staff_id'])) {
+    if (!isset($_COOKIE['staff_id'])) {
         header("Location: login.php");
         exit();
     }
-
-    $staff_name = $_SESSION['staff_name'] ?? 'Staff';
-    $is_admin = (isset($_SESSION['staff_role']) && $_SESSION['staff_role'] == "Administrator");
+    $staff_name = $_COOKIE['staff_name'] ?? 'Staff';
+    $is_admin = (isset($_COOKIE['staff_role']) && $_COOKIE['staff_role'] == "admin");
 
     include '../connections/dbconn.php';
 

@@ -15,14 +15,14 @@
     
     session_start();
 
-    if (!isset($_SESSION['customer_id'])) {
+    if (!isset($_COOKIE['customer_id'])) {
         header("Location: login.php");
         exit();
     }
 
     include '../connections/dbconn.php';
 
-    $customer_id = $_SESSION['customer_id'];
+    $customer_id = $_COOKIE['customer_id'];
     $message = '';
     $error = '';
 
@@ -56,7 +56,7 @@
             $update->bind_param("ssssi", $cname, $ctel, $caddr, $company, $customer_id);
 
             if ($update->execute()) {
-                $_SESSION['customer_name'] = $cname;  // Update session
+                $_COOKIE['customer_name'] = $cname;
                 $message = "Profile updated successfully.";
             } else {
                 $error = "Update failed: " . $conn->error;
@@ -97,7 +97,9 @@
                 if ($update->execute()) {
                     $message = "Password changed successfully. Please log in again.";
                     // Optional: force logout
-                    session_destroy();
+                    setcookie("customer_id", $row['cid'], time() - 120);
+                    setcookie("customer_name", $row['cname'], time() - 120);
+                    setcookie("customer_company", $row['company'], time() - 120);
                     header("Location: login.php");
                     exit(); // Ensure no further processing occurs
                 } else {
@@ -121,10 +123,10 @@
             <a href="profile.php" class="active">Profile</a>
         </nav>
         <div class="nav-right">
-            <?php if (isset($_SESSION['customer_id'])): ?>
+            <?php if (isset($_COOKIE['customer_id'])): ?>
                 <span>Welcome,
-                    <?= htmlspecialchars($_SESSION['customer_name'] ?? 'Customer') ?>
-                    <?= !empty($_SESSION['company']) ? ', ' . htmlspecialchars($_SESSION['company']) : '' ?>
+                    <?= htmlspecialchars($_COOKIE['customer_name'] ?? 'Customer') ?>
+                    <?= !empty($_COOKIE['company']) ? ', ' . htmlspecialchars($_COOKIE['company']) : '' ?>
                 </span>
                 <a href="logout.php" class="btn-outline">Logout</a>
             <?php else: ?>

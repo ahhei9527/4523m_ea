@@ -12,14 +12,11 @@
 <body>
     <?php
     // staff/password_change.php
-    
-    session_start();
-
     // Must be logged in as admin
-    $role = isset($_SESSION['staff_role']) ? strtolower(trim($_SESSION['staff_role'])) : '';
+    $role = isset($_COOKIE['staff_role']) ? strtolower(trim($_COOKIE['staff_role'])) : '';
     $is_admin = ($role === 'admin' || $role === 'administrator');
 
-    if (!isset($_SESSION['staff_id']) || !$is_admin) {
+    if (!isset($_COOKIE['staff_id']) || !$is_admin) {
         header("Location: login.php");
         exit();
     }
@@ -94,8 +91,8 @@
         </nav>
         <div class="nav-right">
             <span style="color:#ecf0f1; margin-right:1.2rem;">
-                <?= htmlspecialchars($_SESSION['staff_name'] ?? 'Admin') ?>
-                (<?= htmlspecialchars(ucfirst($_SESSION['staff_role'] ?? 'Staff')) ?>)
+                <?= htmlspecialchars($_COOKIE['staff_name'] ?? 'Admin') ?>
+                (<?= htmlspecialchars(ucfirst($_COOKIE['staff_role'] ?? 'Staff')) ?>)
             </span>
             <a href="logout.php" class="btn-outline logout-btn">Logout</a>
         </div>

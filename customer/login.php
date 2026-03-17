@@ -12,13 +12,11 @@
 <body>
     <?php
     // customer/login.php
-    
-    session_start();
     // If already logged in as customer, redirect to main shop / home
     $register_message = '';
-    if (isset($_SESSION['register_success'])) {
-        $register_message = $_SESSION['register_success'];
-        unset($_SESSION['register_success']); // show only once
+    if (isset($_COOKIE['register_success'])) {
+        $register_message = $_COOKIE['register_success'];
+        setcookie("register_success","", time() -60); // show only once
     }
 
     $error = '';
@@ -55,11 +53,9 @@
                 // In real projects → use password_verify()
                 if (password_verify($cpassword, $row['cpassword'])) {
                     // Login successful
-                    $_SESSION['customer_id'] = $row['cid'];
-                    $_SESSION['customer_phone'] = $row['ctel'];
-                    $_SESSION['customer_name'] = $row['cname'];
-                    $_SESSION['customer_company'] = $row['company'];
-                    // $_SESSION['customer_role'] = ... (not needed if no roles in Customers table)
+                    setcookie("customer_id",$row['cid'], time() + 120);
+                    setcookie("customer_name",$row['cname'], time() + 120);
+                    setcookie("customer_company",$row['company'], time() + 120);
     
                     header("Location: ../index.php");  // or "shop.php", "orders.php", etc.
                     exit();

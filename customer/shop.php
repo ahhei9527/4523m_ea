@@ -63,10 +63,10 @@ $conn->close();
             <a href="profile.php">Profile</a>
         </nav>
         <div class="nav-right">
-            <?php if (isset($_SESSION['customer_id'])): ?>
+            <?php if (isset($_COOKIE['customer_id'])): ?>
                 <span>Welcome,
-                    <?= htmlspecialchars($_SESSION['customer_name'] ?? 'Customer') ?>
-                    <?= !empty($_SESSION['company']) ? ', ' . htmlspecialchars($_SESSION['company']) : '' ?>
+                    <?= htmlspecialchars($_COOKIE['customer_name'] ?? 'Customer') ?>
+                    <?= !empty($_COOKIE['company']) ? ', ' . htmlspecialchars($_COOKIE['company']) : '' ?>
                 </span>
                 <a href="logout.php" class="btn-outline">Logout</a>
             <?php else: ?>

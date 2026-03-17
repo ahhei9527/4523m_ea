@@ -12,22 +12,19 @@
 <body>
     <?php
     // staff/staff_manage.php
-    
-    session_start();
-
     // Must be logged in AND admin (flexible check for 'admin' or 'Administrator')
-    $role = isset($_SESSION['staff_role']) ? strtolower(trim($_SESSION['staff_role'])) : '';
+    $role = isset($_COOKIE['staff_role']) ? strtolower(trim($_COOKIE['staff_role'])) : '';
     $is_admin = ($role === 'admin' || $role === 'administrator');
 
-    if (!isset($_SESSION['staff_id']) || !$is_admin) {
+    if (!isset($_COOKIE['staff_id']) || !$is_admin) {
         header("Location: dashboard.php");
         exit();
     }
 
     include '../connections/dbconn.php';
 
-    $staff_name = $_SESSION['staff_name'] ?? 'Staff';
-    $is_admin = (isset($_SESSION['staff_role']) && $_SESSION['staff_role'] == "Administrator");
+    $staff_name = $_COOKIE['staff_name'] ?? 'Staff';
+    $is_admin = (isset($_COOKIE['staff_role']) && $_COOKIE['staff_role'] == "admin");
     $message = '';
     $error = '';
 
@@ -64,7 +61,7 @@
             $sid = (int) ($_POST['sid'] ?? 0);
 
             // Prevent changing your own account
-            if ($sid === (int) $_SESSION['staff_id']) {
+            if ($sid === (int) $_COOKIE['staff_id']) {
                 $error = "You are not allowed to change your own status.";
             } elseif ($sid > 0) {
                 $stmt = $conn->prepare("SELECT sstatus FROM Staffs WHERE sid = ?");
@@ -195,7 +192,7 @@
                     </thead>
                     <tbody>
                         <?php foreach ($staff_list as $staff): ?>
-                            <tr class="<?= $staff['sid'] == $_SESSION['staff_id'] ? 'current-user-row' : '' ?>">
+                            <tr class="<?= $staff['sid'] == $_COOKIE['staff_id'] ? 'current-user-row' : '' ?>">
                                 <td><?= htmlspecialchars($staff['sid']) ?></td>
                                 <td><?= htmlspecialchars($staff['sname']) ?></td>
                                 <td><?= htmlspecialchars(ucfirst($staff['srole'])) ?></td>

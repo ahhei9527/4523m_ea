@@ -59,8 +59,8 @@
                 $stmt->bind_param("sssss", $cname, $hashed, $caddress, $ctel, $company);
 
                 if ($stmt->execute()) {
-                    $_SESSION['register_success'] = "Registration successful! Please log in.";
-                    header("Location: login.php");
+                    setcookie("register_success", "register_success", time() + 30);
+                header("Location: login.php");
                     exit();
                 } else {
                     $error = "Registration failed: " . $stmt->error;
@@ -87,11 +87,11 @@
 
     <div class="dashboard-container" style="width:50%; margin:2rem auto;">
 
-        <?php if (isset($_SESSION['register_success'])): ?>
+        <?php if (isset($_COOKIE['register_success'])): ?>
             <div class="success-message">
-                <?= htmlspecialchars($_SESSION['register_success']) ?>
+                <?= htmlspecialchars($_COOKIE['register_success']) ?>
             </div>
-            <?php unset($_SESSION['register_success']); ?>
+            <?php unset($_COOKIE['register_success']); ?>
         <?php endif; ?>
 
         <?php if ($error): ?>

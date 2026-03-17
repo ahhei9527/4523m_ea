@@ -12,20 +12,17 @@
 <body>
     <?php
     // staff/materials_add.php
-    
-    session_start();
-
     // Must be logged in as staff
-    if (!isset($_SESSION['staff_id'])) {
+    if (!isset($_COOKIE['staff_id'])) {
         header("Location: login.php");
         exit();
     }
-    $staff_name = $_SESSION['staff_name'] ?? 'Staff';
-    $is_admin = (isset($_SESSION['staff_role']) && $_SESSION['staff_role'] == "Administrator");
+    $staff_name = $_COOKIE['staff_name'] ?? 'Staff';
+    $is_admin = (isset($_COOKIE['staff_role']) && $_COOKIE['staff_role'] == "Administrator");
     
     include '../connections/dbconn.php';
 
-    $role = isset($_SESSION['staff_role']) ? strtolower(trim($_SESSION['staff_role'])) : '';
+    $role = isset($_COOKIE['staff_role']) ? strtolower(trim($_COOKIE['staff_role'])) : '';
     $is_admin = ($role === 'admin' || $role === 'administrator');
     $message = '';
     $error = '';

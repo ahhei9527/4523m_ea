@@ -14,14 +14,14 @@
     // customer/checkout.php
     session_start();
 
-    if (!isset($_SESSION['customer_id'])) {
+    if (!isset($_COOKIE['customer_id'])) {
         header("Location: login.php");
         exit();
     }
 
     include '../connections/dbconn.php';
 
-    $cid = $_SESSION['customer_id'];
+    $cid = $_COOKIE['customer_id'];
     $error = $success = '';
 
     // Get saved address
@@ -156,10 +156,10 @@
             <a href="profile.php">Profile</a>
         </nav>
         <div class="nav-right">
-        <?php if (isset($_SESSION['customer_id'])): ?>
+        <?php if (isset($_COOKIE['customer_id'])): ?>
             <span>Welcome,
-                <?= htmlspecialchars($_SESSION['customer_name'] ?? 'Customer') ?>
-                <?= !empty($_SESSION['company']) ? ', ' . htmlspecialchars($_SESSION['company']) : '' ?>
+                <?= htmlspecialchars($_COOKIE['customer_name'] ?? 'Customer') ?>
+                <?= !empty($_COOKIE['company']) ? ', ' . htmlspecialchars($_COOKIE['company']) : '' ?>
             </span>
         <?php endif; ?>
             <a href="logout.php" class="btn-outline">Logout</a>

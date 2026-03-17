@@ -15,14 +15,14 @@
     
     session_start();
 
-    if (!isset($_SESSION['customer_id'])) {
+    if (!isset($_COOKIE['customer_id'])) {
         header("Location: login.php");
         exit();
     }
 
     include '../connections/dbconn.php';
 
-    $customer_id = $_SESSION['customer_id'];
+    $customer_id = $_COOKIE['customer_id'];
 
     // Fetch all orders for this customer
     $orders = [];
@@ -85,8 +85,15 @@
             <a href="profile.php">Profile</a>
         </nav>
         <div class="nav-right">
-            <span>Welcome, <?= htmlspecialchars($_SESSION['customer_name'] ?? 'Guest') ?>, <?= htmlspecialchars($_SESSION['company'] ?? '') ?></span>
-            <a href="logout.php" class="btn-outline">Logout</a>
+            <?php if (isset($_COOKIE['customer_id'])): ?>
+                <span>Welcome,
+                    <?= htmlspecialchars($_COOKIE['customer_name'] ?? 'Customer') ?>
+                    <?= !empty($_COOKIE['company']) ? ', ' . htmlspecialchars($_COOKIE['company']) : '' ?>
+                </span>
+                <a href="logout.php" class="btn-outline">Logout</a>
+            <?php else: ?>
+                <a href="../login.php" class="btn-outline">Login</a>
+            <?php endif; ?>
         </div>
         <div class="nav-right">
             <a href="../customer/cart.php" class="cart-icon">

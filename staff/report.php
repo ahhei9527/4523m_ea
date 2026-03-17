@@ -12,21 +12,15 @@
 <body>
     <?php
     // staff/report.php
-    
-    session_start();
-
     // Must be logged in as staff
-    if (!isset($_SESSION['staff_id'])) {
+    if (!isset($_COOKIE['staff_id'])) {
         header("Location: login.php");
         exit();
     }
-    $staff_name = $_SESSION['staff_name'] ?? 'Staff';
-    $is_admin = (isset($_SESSION['staff_role']) && $_SESSION['staff_role'] == "Administrator");
+    $staff_name = $_COOKIE['staff_name'];
+    $is_admin = (isset($_COOKIE['staff_role']) && $_COOKIE['staff_role'] === "admin");
 
     include '../connections/dbconn.php';
-
-    $role = isset($_SESSION['staff_role']) ? strtolower(trim($_SESSION['staff_role'])) : '';
-    $is_admin = ($role === 'admin' || $role === 'administrator');
     // Optional date range filter
     $start_date = $_GET['start_date'] ?? date('Y-m-01'); // default: first day of current month
     $end_date = $_GET['end_date'] ?? date('Y-m-d');   // default: today

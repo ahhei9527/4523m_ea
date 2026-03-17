@@ -12,11 +12,8 @@
 <body>
     <?php
     // staff/furniture_add.php
-    
-    session_start();
-
     // Must be logged in as staff
-    if (!isset($_SESSION['staff_id'])) {
+    if (!isset($_COOKIE['staff_id'])) {
         header("Location: login.php");
         exit();
     }
@@ -26,8 +23,8 @@
 
     include '../connections/dbconn.php';
 
-    $staff_name = $_SESSION['staff_name'] ?? 'Staff';
-    $is_admin = (isset($_SESSION['staff_role']) && $_SESSION['staff_role'] == "Administrator");
+    $staff_name = $_COOKIE['staff_name'] ?? 'Staff';
+    $is_admin = (isset($_COOKIE['staff_role']) && $_COOKIE['staff_role'] == "admin");
 
     $message = '';
     $error = '';

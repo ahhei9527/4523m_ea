@@ -12,11 +12,8 @@
 <body>
     <?php
     // staff/login.php
-    
-    session_start();
-
     // If already logged in, go to dashboard
-    if (isset($_SESSION['staff_id']) && isset($_SESSION['staff_role'])) {
+    if (isset($_COOKIE['staff_id']) && isset($_COOKIE['staff_role'])) {
         header("Location: dashboard.php");
         exit();
     }
@@ -73,11 +70,9 @@
                         // Optional: log or notify yourself that upgrade happened
                     }
 
-                    // Proceed with session
-                    $_SESSION['staff_id'] = $row['sid'];
-                    $_SESSION['staff_name'] = $row['sname'];
-                    $_SESSION['staff_role'] = $row['srole'];
-
+                    setcookie("staff_id", $row['sid'], time() + 120);
+                    setcookie("staff_name", $row['sname'], time() + 120);
+                    setcookie("staff_role", $row['srole'], time() + 120);
                     header("Location: dashboard.php");
                     exit();
                 } else {

@@ -12,22 +12,19 @@
 <body>
     <?php
     // customers_view.php (admin-only customer list)
-    
-    session_start();
-
     // Must be logged in AND admin
-    $role = isset($_SESSION['staff_role']) ? strtolower(trim($_SESSION['staff_role'])) : '';
+    $role = isset($_COOKIE['staff_role']) ? strtolower(trim($_COOKIE['staff_role'])) : '';
     $is_admin = ($role === 'admin' || $role === 'administrator');
 
-    if (!isset($_SESSION['staff_id']) || !$is_admin) {
+    if (!isset($_COOKIE['staff_id']) || !$is_admin) {
         header("Location: dashboard.php");
         exit();
     }
 
     include '../connections/dbconn.php';
 
-    $staff_name = $_SESSION['staff_name'] ?? 'Staff';
-    $is_admin = (isset($_SESSION['staff_role']) && $_SESSION['staff_role'] == "Administrator");
+    $staff_name = $_COOKIE['staff_name'] ?? 'Staff';
+    $is_admin = (isset($_COOKIE['staff_role']) && $_COOKIE['staff_role'] == "admin");
     $message = '';
     $error = '';
 
@@ -53,7 +50,7 @@
     <header class="navbar">
         <div class="logo">
             <h2>Premium Living</h2>
-            <small>Staff Area</small>
+            <small style="color:#bdc3c7; font-size:0.9rem;">Staff Area</small>
         </div>
         <nav class="nav-links">
             <a href="dashboard.php">Dashboard</a>
@@ -61,8 +58,10 @@
             <a href="materials_add.php">Materials</a>
             <a href="orders_manage.php">Orders</a>
             <a href="report.php">Reports</a>
-            <a href="staff_manage.php">Manage Staff</a>
-            <a href="customers_view.php" class="active">Customers</a>
+            <?php if ($is_admin): ?>
+                <a href="staff_manage.php">Manage Staff</a>
+                <a href="customers_view.php" class="active">Customers</a>
+            <?php endif; ?>
         </nav>
         <div class="nav-right">
             <span style="color:#ecf0f1; margin-right:1.2rem;">

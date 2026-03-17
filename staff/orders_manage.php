@@ -12,15 +12,12 @@
 <body>
     <?php
     // staff/orders_manage.php
-    
-    session_start();
-
-    if (!isset($_SESSION['staff_id'])) {
+    if (!isset($_COOKIE['staff_id'])) {
         header("Location: login.php");
         exit();
     }
-    $staff_name = $_SESSION['staff_name'] ?? 'Staff';
-    $is_admin = (isset($_SESSION['staff_role']) && $_SESSION['staff_role'] == "Administrator");
+    $staff_name = $_COOKIE['staff_name'] ?? 'Staff';
+    $is_admin = (isset($_COOKIE['staff_role']) && $_COOKIE['staff_role'] == "Administrator");
 
     include '../connections/dbconn.php';
 
@@ -33,7 +30,7 @@
         5 => 'Completed'
     ];
 
-    $is_admin = isset($_SESSION['staff_role']) && in_array(strtolower(trim($_SESSION['staff_role'] ?? '')), ['admin', 'administrator']);
+    $is_admin = isset($_COOKIE['staff_role']) && in_array(strtolower(trim($_COOKIE['staff_role'] ?? '')), ['admin', 'administrator']);
 
     // Handle status update
     $message = $error = null;

@@ -12,20 +12,18 @@
 <body>
     <?php
     // staff/password_change.php
-    
-    session_start();
-    $role = isset($_SESSION['staff_role']) ? strtolower(trim($_SESSION['staff_role'])) : '';
+    $role = isset($_COOKIE['staff_role']) ? strtolower(trim($_COOKIE['staff_role'])) : '';
     $is_admin = ($role === 'admin' || $role === 'administrator');
 
-    if (!isset($_SESSION['staff_id']) || !$is_admin) {
+    if (!isset($_COOKIE['staff_id']) || !$is_admin) {
         header("Location: dashboard.php");
         exit();
     }
 
     include '../connections/dbconn.php';
 
-    $staff_name = $_SESSION['staff_name'] ?? 'Staff';
-    $is_admin = (isset($_SESSION['staff_role']) && $_SESSION['staff_role'] == "Administrator");
+    $staff_name = $_COOKIE['staff_name'] ?? 'Staff';
+    $is_admin = (isset($_COOKIE['staff_role']) && $_COOKIE['staff_role'] == "Administrator");
     $message = '';
     $error = '';
 
@@ -37,7 +35,7 @@
     // Get target staff ID from URL
     $target_sid = isset($_POST['target_sid']) && (int) $_POST['target_sid'] > 0
         ? (int) $_POST['target_sid']
-        : $_SESSION['staff_id'];
+        : $_COOKIE['staff_id'];
 
     if ($target_sid <= 0) {
         $error = "Invalid staff ID.";
