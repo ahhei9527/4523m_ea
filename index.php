@@ -47,10 +47,10 @@
             <a href="customer/profile.php">Profile</a>
         </nav>
         <div class="nav-right">
-            <?php if (isset($_cookie['customer_id'])): ?>
-                <span>Welcome,
-                    <?= htmlspecialchars($_cookie['customer_name'] ?? 'Customer') ?>
-                    <?= !empty($_cookie['company']) ? ', ' . htmlspecialchars($_cookie['company']) : '' ?>
+            <?php if (isset($_COOKIE['customer_id'])): ?>
+                <span class="welcome-text">
+                    Welcome, <?= htmlspecialchars($_COOKIE['customer_name'] ?? 'Customer') ?>
+                    <?= !empty($_COOKIE['customer_company']) ? ', ' . htmlspecialchars($_COOKIE['customer_company']) : '' ?>
                 </span>
                 <a href="customer/logout.php" class="btn-outline">Logout</a>
             <?php else: ?>

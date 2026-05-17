@@ -16,7 +16,7 @@
     $register_message = '';
     if (isset($_COOKIE['register_success'])) {
         $register_message = $_COOKIE['register_success'];
-        setcookie("register_success","", time() -60); // show only once
+        setcookie("register_success", "", time() - 60); // show only once
     }
 
     $error = '';
@@ -33,14 +33,13 @@
         } else {
             include '../connections/dbconn.php';
 
-            // Using prepared statement (good practice)
             $stmt = $conn->prepare("
             SELECT cid, cname, cpassword, ctel, company
-            FROM Customers 
+            FROM customers 
             WHERE ctel = ?
         ");
 
-            $stmt->bind_param("s", $ctel);
+            $stmt->bind_param("i", $input_ctel);
             $stmt->execute();
             $result = $stmt->get_result();
 
@@ -49,15 +48,28 @@
             } else {
                 $row = $result->fetch_assoc();
 
+                $stored = $row['cpassword'];
+
                 // Plain text comparison (as per your current DB design)
-                // In real projects → use password_verify()
-                if (password_verify($cpassword, $row['cpassword'])) {
-                    // Login successful
-                    setcookie("customer_id",$row['cid'], time() + 120);
-                    setcookie("customer_name",$row['cname'], time() + 120);
-                    setcookie("customer_company",$row['company'], time() + 120);
-    
-                    header("Location: ../index.php");  // or "shop.php", "orders.php", etc.
+                if ($stored === $cpassword || password_verify($cpassword, $stored)) {
+                    if (!password_verify($cpassword, $stored)) {
+                        $newHash = password_hash($spassword, PASSWORD_ARGON2ID, [
+                            'memory_cost' => 65536,  // ≈64 MB
+                            'time_cost' => 4,
+                            'threads' => 1
+                        ]);
+
+                        $update = $conn->prepare("UPDATE customers SET cpassword = ? WHERE cid = ?");
+                        $update->bind_param("si", $newHash, $row['sid']);
+                        $update->execute();
+                        $update->close();
+                    }
+
+                    setcookie("customer_id", $row['cid'], time() + 1200, "/", "", false, true);
+                    setcookie("customer_name", $row['cname'], time() + 1200, "/", "", false, true);
+                    setcookie("customer_company", $row['company'], time() + 1200, "/", "", false, true);
+                    setcookie("customer_tel", $row['ctel'], time() + 1200, "/", "", false, true);
+                    header("Location: ../index.php");
                     exit();
                 } else {
                     $error = "Incorrect password.";
@@ -75,7 +87,7 @@
             // Optional: redirect again just in case (but header() already did it)
             // window.location.href = "login.php";
         </script>
-<?php endif; ?>
+    <?php endif; ?>
     <div class="login-container">
         <div class="login-box">
             <div class="login-header">
@@ -84,9 +96,9 @@
             </div>
 
             <?php if (!empty($error)): ?>
-                    <div class="error-message">
-                        <?= htmlspecialchars($error) ?>
-                    </div>
+                <div class="error-message">
+                    <?= htmlspecialchars($error) ?>
+                </div>
             <?php endif; ?>
 
             <form method="POST" action="">

@@ -11,9 +11,10 @@
 
 <body>
     <?php
-    setcookie("customer_id", $row['cid'], time() - 86400);
-    setcookie("customer_name", $row['cname'], time() - 86400);
-    setcookie("customer_company", $row['company'], time() - 86400);
+    setcookie("customer_id", "", $expiry, "/", "", false, true);
+    setcookie("customer_name", "", $expiry, "/", "", false, true);
+    setcookie("customer_company", "", $expiry, "/", "", false, true);
+    setcookie("customer_tel", "", $expiry, "/", "", false, true);
     header("Location: ../index.php");
     exit();
     ?>
