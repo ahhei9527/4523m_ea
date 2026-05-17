@@ -11,9 +11,9 @@
 
 <body>
     <?php
-    setcookie("customer_id", $row['cid'], time() - 120);
-    setcookie("customer_name", $row['cname'], time() - 120);
-    setcookie("customer_company", $row['company'], time() - 120);
+    setcookie("customer_id", $row['cid'], time() - 86400);
+    setcookie("customer_name", $row['cname'], time() - 86400);
+    setcookie("customer_company", $row['company'], time() - 86400);
     header("Location: ../index.php");
     exit();
     ?>

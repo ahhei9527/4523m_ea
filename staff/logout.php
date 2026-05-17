@@ -11,9 +11,19 @@
 
 <body>
     <?php
-    setcookie("staff_id", $row['sid'], time() - 120);
-    setcookie("staff_name", $row['sname'], time() - 120);
-    setcookie("staff_role", $row['srole'], time() - 120);
+    // staff/logout.php
+    
+    // Force delete cookies
+    setcookie('staff_id', '', time() - 86400);
+    setcookie('staff_name', '', time() - 86400);
+    setcookie('staff_role', '', time() - 86400);
+
+    // Destroy session
+    session_start();
+    session_unset();
+    session_destroy();
+
+    // Redirect
     header("Location: ../index.php");
     exit();
     ?>

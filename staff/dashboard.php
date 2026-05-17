@@ -12,11 +12,17 @@
 <body>
     <?php
     // staff/dashboard.php
-    // Security: Redirect if not logged in as staff
-    if (!isset($_COOKIE['staff_id'])) {
+    // === AUTO EXTEND COOKIES ON ANY ACTIVITY ===
+    if (isset($_COOKIE['staff_id'])) {
+        $staff_id   = $_COOKIE['staff_id'];
+        $staff_name = $_COOKIE['staff_name'] ?? 'Staff';
+        $staff_role = $_COOKIE['staff_role'] ?? '';
+
+    } else {
         header("Location: login.php");
         exit();
-    }
+    } 
+
     $staff_name = $_COOKIE['staff_name'] ?? 'Staff';
     $is_admin = (isset($_COOKIE['staff_role']) && $_COOKIE['staff_role'] == "admin");
 

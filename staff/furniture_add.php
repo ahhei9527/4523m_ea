@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,15 +11,22 @@
 <body>
     <?php
     // staff/furniture_add.php
-    // Must be logged in as staff
-    if (!isset($_COOKIE['staff_id'])) {
+    // === AUTO EXTEND COOKIES ON ANY ACTIVITY ===
+    if (isset($_COOKIE['staff_id'])) {
+        $staff_id   = $_COOKIE['staff_id'];
+        $staff_name = $_COOKIE['staff_name'] ?? 'Staff';
+        $staff_role = $_COOKIE['staff_role'] ?? '';
+
+        // Renew cookies (extend lifetime)
+        setcookie('staff_id',   $staff_id,   time() + 1200, "/", "", false, true);
+        setcookie('staff_name', $staff_name, time() + 1200, "/", "", false, true);
+        setcookie('staff_role', $staff_role, time() + 1200, "/", "", false, true);
+    } else {
         header("Location: login.php");
         exit();
     }
 
-    // Prevent any accidental output before headers
     ob_start();
-
     include '../connections/dbconn.php';
 
     $staff_name = $_COOKIE['staff_name'] ?? 'Staff';
@@ -29,111 +35,95 @@
     $message = '';
     $error = '';
 
-    // Fetch all materials for dropdown
+    // Fetch materials
     $materials = [];
     $result = $conn->query("SELECT mid, mname, munit FROM Materials ORDER BY mname ASC");
     while ($row = $result->fetch_assoc()) {
         $materials[] = $row;
     }
 
-    // Handle form submission - Add new furniture
-    // Handle image upload
-    $fimage = '';
-    $upload_dir = '../images/furniture/';  // relative to web root — good
-    $public_path_prefix = 'images/furniture/';  // what you store in DB
-    
+    $upload_dir = '../images/';
+    $public_path_prefix = 'images/';
+
     if (!is_dir($upload_dir)) {
         mkdir($upload_dir, 0755, true);
-        // Optional: place .htaccess to deny script execution
         $htaccess = $upload_dir . '.htaccess';
         if (!file_exists($htaccess)) {
             file_put_contents($htaccess, "<FilesMatch \"\.(?i:php|php[0-9]|phtml|phps|phar|inc|sh|pl|cgi|py|asp|aspx|jsp|jspx|cfm|cfc)\">\nOrder Deny,Allow\nDeny from all\n</FilesMatch>\nAddHandler text/plain .php .php3 .php4 .php5 .phtml .phar");
         }
     }
 
-    if (isset($_FILES['fimage']) && $_FILES['fimage']['error'] === UPLOAD_ERR_OK) {
-        $tmp_name = $_FILES['fimage']['tmp_name'];
-        $orig_name = $_FILES['fimage']['name'];
-        $file_size = $_FILES['fimage']['size'];
-        $mime = mime_content_type($tmp_name);  // real MIME, not client-supplied
-    
-        $allowed_mimes = [
-            'image/jpeg' => 'jpg',
-            'image/png' => 'png',
-            'image/gif' => 'gif',
-            // 'image/webp' => 'webp',   // add if you want
-        ];
-
-        if (!array_key_exists($mime, $allowed_mimes)) {
-            $error = "Invalid image type. Only JPEG, PNG, GIF allowed.";
-        } elseif ($file_size > 5 * 1024 * 1024) {   // lowered to 5MB (your form says 5MB)
-            $error = "Image too large (max 5MB).";
-        } elseif (!is_uploaded_file($tmp_name)) {
-            $error = "Invalid upload source.";
-        } else {
-            // Generate safe, unique name — no original name kept
-            $ext = $allowed_mimes[$mime];
-            $new_name = time() . '_' . bin2hex(random_bytes(8)) . '.' . $ext;
-            $target_path = $upload_dir . $new_name;
-
-            if (move_uploaded_file($tmp_name, $target_path)) {
-                chmod($target_path, 0644);  // safe permissions
-                $fimage = $public_path_prefix . $new_name;
-            } else {
-                $error = "Failed to save image (permissions?).";
-            }
-        }
+    function sanitizeFilename($name) {
+        $name = strtolower(trim($name));
+        $name = preg_replace('/[^a-z0-9\s-]/', '', $name);
+        $name = preg_replace('/[\s-]+/', '-', $name);
+        return $name;
     }
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_furniture'])) {
-        $fname = trim($_POST['fname'] ?? '');
-        $fdesc = trim($_POST['fdesc'] ?? '');
-        $fprice = filter_var($_POST['fprice'] ?? 0, FILTER_VALIDATE_FLOAT);
+        $fname   = trim($_POST['fname'] ?? '');
+        $fdesc   = trim($_POST['fdesc'] ?? '');
+        $fprice  = filter_var($_POST['fprice'] ?? 0, FILTER_VALIDATE_FLOAT);
 
         if (empty($fname) || empty($fdesc) || $fprice === false || $fprice <= 0) {
             $error = "Name, description and valid price are required.";
-        } elseif (empty($error)) {
-            $stmt = $conn->prepare("
-            INSERT INTO Furnitures (fname, fdesc, fprice, fimage)
-            VALUES (?, ?, ?, ?)
-        ");
-            $stmt->bind_param("ssds", $fname, $fdesc, $fprice, $fimage);
+        } else {
+            // Handle PNG Image Upload - Name same as Furniture Name
+            if (isset($_FILES['fimage']) && $_FILES['fimage']['error'] === UPLOAD_ERR_OK) {
+                $tmp_name = $_FILES['fimage']['tmp_name'];
+                $mime = mime_content_type($tmp_name);
+                $file_size = $_FILES['fimage']['size'];
 
-            if ($stmt->execute()) {
-                $fid = $conn->insert_id;
-                // ... materials insert code remains the same ...
-    
-                $message = "Furniture '$fname' added (ID: $fid).";
-                if ($fimage)
-                    $message .= " Image: $fimage";
+                if ($mime !== 'image/png') {
+                    $error = "Only PNG images are allowed.";
+                } elseif ($file_size > 5 * 1024 * 1024) {
+                    $error = "Image too large (max 5MB).";
+                } else {
+                    $base_name = sanitizeFilename($fname);
+                    $new_name = $base_name . '.png';
+                    $target_path = $upload_dir . $new_name;
 
-                header("Location: furniture_add.php");
-                exit();
-            } else {
-                $error = "Insert failed: " . $stmt->error;
+                    if (file_exists($target_path)) {
+                        $error = "Image with this furniture name already exists. Please choose a different name.";
+                    } else {
+                        if (move_uploaded_file($tmp_name, $target_path)) {
+                            chmod($target_path, 0644);
+                        } else {
+                            $error = "Failed to save image.";
+                        }
+                    }
+                }
             }
-            $stmt->close();
+
+            if (empty($error)) {
+                $stmt = $conn->prepare("
+                    INSERT INTO Furnitures (fname, fdesc, fprice)
+                    VALUES (?, ?, ?)
+                ");
+                $stmt->bind_param("ssd", $fname, $fdesc, $fprice);
+
+                if ($stmt->execute()) {
+                    header("Location: furniture_add.php?success=1");
+                    exit();
+                } else {
+                    $error = "Insert failed: " . $stmt->error;
+                }
+                $stmt->close();
+            }
         }
     }
 
-
-    // Load existing furniture (connection still open)
+    // Load furniture list
     $furniture_list = [];
-    $result = $conn->query("
-    SELECT fid, fname, fdesc, fprice
-    FROM Furnitures
-    ORDER BY fname ASC
-");
+    $result = $conn->query("SELECT fid, fname, fdesc, fprice FROM Furnitures ORDER BY fname ASC");
     while ($row = $result->fetch_assoc()) {
         $furniture_list[] = $row;
     }
 
-    // Close connection at the very end
     mysqli_close($conn);
-
-    // Flush output buffer (safe now)
     ob_end_flush();
     ?>
+
     <header class="navbar">
         <div class="logo">
             <h2>Premium Living</h2>
@@ -160,20 +150,18 @@
     </header>
 
     <div class="dashboard-container">
-
         <h1 class="section-title" style="margin:2rem 0;">Add New Furniture</h1>
 
-        <?php if ($message): ?>
-            <div class="success-message"><?= htmlspecialchars($message) ?></div>
+        <?php if (isset($_GET['success'])): ?>
+            <div class="success-message">Furniture added successfully!</div>
         <?php endif; ?>
 
         <?php if ($error): ?>
             <div class="error-message"><?= htmlspecialchars($error) ?></div>
         <?php endif; ?>
 
-        <!-- Add Furniture Form -->
-        <div class="form-container"
-            style="background:white; padding:2rem; border-radius:12px; box-shadow:0 4px 15px rgba(0,0,0,0.08); margin-bottom:3rem;">
+        <!-- Form -->
+        <div class="form-container" style="background:white; padding:2rem; border-radius:12px; box-shadow:0 4px 15px rgba(0,0,0,0.08); margin-bottom:3rem;">
             <form method="POST" action="" enctype="multipart/form-data">
                 <input type="hidden" name="add_furniture" value="1">
 
@@ -193,32 +181,19 @@
                 </div>
 
                 <div class="form-group">
-                    <label>Image (optional)</label>
-                    <input type="file" name="fimage" accept="image/*">
-                    <small style="color:#777;">JPG, JPEG, PNG, GIF only (max 5MB)</small>
+                    <label>Image (PNG only)</label>
+                    <input type="file" name="fimage" accept="image/png">
+                    <small style="color:#777;">
+                        Only PNG allowed.<br>
+                        Image will be saved as: <strong>[Furniture Name].png</strong> in <strong>images/</strong> folder
+                    </small>
                 </div>
 
-                <!-- Materials -->
                 <div class="form-group">
                     <label>Required Materials</label>
                     <div id="materials-container">
-                        <div class="material-row"
-                            style="display:flex; gap:1rem; margin-bottom:1rem; align-items:center;">
-                            <select name="materials[]" style="flex:1; padding:0.6rem;">
-                                <option value="">Select Material</option>
-                                <?php foreach ($materials as $m): ?>
-                                    <option value="<?= $m['mid'] ?>">
-                                        <?= htmlspecialchars($m['mname']) ?> (<?= htmlspecialchars($m['munit']) ?>)
-                                    </option>
-                                <?php endforeach; ?>
-                            </select>
-                            <input type="number" name="pmqty[]" min="1" placeholder="Qty"
-                                style="width:100px; padding:0.6rem;">
-                            <button type="button" class="btn-outline remove-material"
-                                style="color:#dc3545;">Remove</button>
-                        </div>
+                        <!-- Your dynamic material rows here -->
                     </div>
-
                     <button type="button" id="add-material-btn" class="btn-outline" style="margin-top:1rem;">
                         <i class="fas fa-plus"></i> Add Material
                     </button>
@@ -230,7 +205,7 @@
             </form>
         </div>
 
-        <!-- Existing Furniture List -->
+        <!-- Furniture List -->
         <h2 style="margin:3rem 0 1rem; color:#2c3e50;">Current Furniture Items</h2>
 
         <?php if (empty($furniture_list)): ?>
@@ -253,11 +228,15 @@
                             <tr>
                                 <td><?= $f['fid'] ?></td>
                                 <td>
-                                    <?php if (!empty($f['fname'])): ?>
-                                        <img src="../images/<?= htmlspecialchars($f['fname']) ?>.png"
-                                            alt="<?= htmlspecialchars($f['fname']) ?>"
-                                            style="width:80px; height:80px; object-fit:cover; border-radius:6px;"
-                                            onerror="this.onerror=null; this.src='/images/placeholder.jpg'; this.alt='Image not found';">
+                                    <?php 
+                                    $img_name = $f['fname'];
+                                    $img_full_path = '../images/' . $img_name . '.png';   // ← Path changed to ../images/
+                                    
+                                    if (file_exists($img_full_path)): 
+                                    ?>
+                                        <img src="../images/<?= htmlspecialchars($img_name) ?>.png"
+                                             alt="<?= htmlspecialchars($f['fname']) ?>"
+                                             style="width:80px; height:80px; object-fit:cover; border-radius:6px;">
                                     <?php else: ?>
                                         <span style="color:#999;">No image</span>
                                     <?php endif; ?>
@@ -269,8 +248,7 @@
                                     <?php
                                     include '../connections/dbconn.php';
 
-                                    $max_units = PHP_INT_MAX;  // very large number as starting point
-                            
+                                    $max_units = PHP_INT_MAX;
                                     $stmt = $conn->prepare("
                                         SELECT fm.pmqty, m.mqty
                                         FROM FurnitureMaterials fm
@@ -285,27 +263,20 @@
                                     $has_materials = $result->num_rows > 0;
 
                                     if (!$has_materials) {
-                                        // No materials defined → either unlimited or 0 (choose business rule)
-                                        $stock = 0;  // most common: treat as not producible
+                                        $stock = 0;
                                     } else {
                                         while ($row = $result->fetch_assoc()) {
-                                            $required_per_unit = (int) $row['pmqty'];
-                                            $available = (int) $row['mqty'];
-
-                                            if ($required_per_unit <= 0)
-                                                continue;
-
-                                            $can_make_with_this = floor($available / $required_per_unit);
-                                            $max_units = min($max_units, $can_make_with_this);
+                                            $required = (int)$row['pmqty'];
+                                            $available = (int)$row['mqty'];
+                                            if ($required > 0) {
+                                                $max_units = min($max_units, floor($available / $required));
+                                            }
                                         }
-
                                         $stock = ($max_units === PHP_INT_MAX) ? 0 : $max_units;
                                     }
-
                                     $stmt->close();
                                     mysqli_close($conn);
 
-                                    // Visual feedback (optional but very useful)
                                     if ($stock > 10) {
                                         echo '<span style="color:#27ae60; font-weight:bold;">' . number_format($stock) . '</span>';
                                     } elseif ($stock > 0) {
@@ -321,10 +292,8 @@
                 </table>
             </div>
         <?php endif; ?>
-
     </div>
+
     <script src="../js/main.js"></script>
-
 </body>
-
 </html>

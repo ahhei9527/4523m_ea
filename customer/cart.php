@@ -17,6 +17,18 @@
 
     include '../connections/dbconn.php';
 
+     // === AUTO EXTEND COOKIES ON ANY ACTIVITY ===
+    if (isset($_COOKIE['customer_id'])) {
+        $customer_id = $_COOKIE['customer_id'];
+        $customer_name = $_COOKIE['customer_name'] ?? 'Customer';
+        $customer_company = $_COOKIE['customer_company'] ?? '';
+
+        // Renew cookies (extend lifetime)
+        setcookie('customer_id',   $customer_id,   time() + 1200, "/", "", false, true);
+        setcookie('customer_name', $customer_name, time() + 1200, "/", "", false, true);
+        setcookie('customer_company', $customer_company, time() + 1200, "/", "", false, true);
+    }
+
     // Cart is stored in session as array [fid => quantity]
     if (!isset($_SESSION['cart'])) {
         $_SESSION['cart'] = [];
