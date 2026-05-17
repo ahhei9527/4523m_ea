@@ -53,14 +53,14 @@
                 // Plain text comparison (as per your current DB design)
                 if ($stored === $cpassword || password_verify($cpassword, $stored)) {
                     if (!password_verify($cpassword, $stored)) {
-                        $newHash = password_hash($spassword, PASSWORD_ARGON2ID, [
+                        $newHash = password_hash($cpassword, PASSWORD_ARGON2ID, [
                             'memory_cost' => 65536,  // ≈64 MB
                             'time_cost' => 4,
                             'threads' => 1
                         ]);
 
                         $update = $conn->prepare("UPDATE customers SET cpassword = ? WHERE cid = ?");
-                        $update->bind_param("si", $newHash, $row['sid']);
+                        $update->bind_param("si", $newHash, $row['cid']);
                         $update->execute();
                         $update->close();
                     }
