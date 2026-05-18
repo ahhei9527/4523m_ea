@@ -14,22 +14,22 @@
     // staff/materials_add.php
     // === AUTO EXTEND COOKIES ON ANY ACTIVITY ===
     if (isset($_COOKIE['staff_id'])) {
-        $staff_id   = $_COOKIE['staff_id'];
+        $staff_id = $_COOKIE['staff_id'];
         $staff_name = $_COOKIE['staff_name'] ?? 'Staff';
         $staff_role = $_COOKIE['staff_role'] ?? '';
 
         // Renew cookies (extend lifetime)
-        setcookie('staff_id',   $staff_id,   time() + 1200, "/", "", false, true);
+        setcookie('staff_id', $staff_id, time() + 1200, "/", "", false, true);
         setcookie('staff_name', $staff_name, time() + 1200, "/", "", false, true);
         setcookie('staff_role', $staff_role, time() + 1200, "/", "", false, true);
     } else {
         header("Location: login.php");
         exit();
     }
-    
+
     $staff_name = $_COOKIE['staff_name'] ?? 'Staff';
     $is_admin = (isset($_COOKIE['staff_role']) && $_COOKIE['staff_role'] == "Administrator");
-    
+
     include '../connections/dbconn.php';
 
     $role = isset($_COOKIE['staff_role']) ? strtolower(trim($_COOKIE['staff_role'])) : '';
