@@ -28,7 +28,7 @@
     }
     
     $staff_name = $_COOKIE['staff_name'];
-    $is_admin = (isset($_COOKIE['staff_role']) && $_COOKIE['staff_role'] === "admin");
+    $is_admin = (isset($_COOKIE['staff_role']) && $_COOKIE['staff_role'] === "Administrator");
 
     include '../connections/dbconn.php';
     // Optional date range filter

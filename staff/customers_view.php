@@ -14,7 +14,7 @@
     // customers_view.php (admin-only customer list)
     // Must be logged in AND admin
     $role = isset($_COOKIE['staff_role']) ? strtolower(trim($_COOKIE['staff_role'])) : '';
-    $is_admin = ($role === 'admin' || $role === 'administrator');
+    $is_admin = (isset($_COOKIE['staff_role']) && $_COOKIE['staff_role'] == "Administrator");
 
     // === AUTO EXTEND COOKIES ON ANY ACTIVITY ===
     if (isset($_COOKIE['staff_id'])) {
@@ -34,7 +34,6 @@
     include '../connections/dbconn.php';
 
     $staff_name = $_COOKIE['staff_name'] ?? 'Staff';
-    $is_admin = (isset($_COOKIE['staff_role']) && $_COOKIE['staff_role'] == "admin");
     $message = '';
     $error = '';
 

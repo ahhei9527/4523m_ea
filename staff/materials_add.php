@@ -33,7 +33,6 @@
     include '../connections/dbconn.php';
 
     $role = isset($_COOKIE['staff_role']) ? strtolower(trim($_COOKIE['staff_role'])) : '';
-    $is_admin = ($role === 'admin' || $role === 'administrator');
     $message = '';
     $error = '';
 

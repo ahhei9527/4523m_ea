@@ -14,7 +14,7 @@
     // staff/staff_manage.php
     // Must be logged in AND admin (flexible check for 'admin' or 'Administrator')
     $role = isset($_COOKIE['staff_role']) ? strtolower(trim($_COOKIE['staff_role'])) : '';
-    $is_admin = ($role === 'admin' || $role === 'administrator');
+    $is_admin = (isset($_COOKIE['staff_role']) && $_COOKIE['staff_role'] == "Administrator");
 
     // === AUTO EXTEND COOKIES ON ANY ACTIVITY ===
     if (isset($_COOKIE['staff_id'])) {
@@ -34,7 +34,6 @@
     include '../connections/dbconn.php';
 
     $staff_name = $_COOKIE['staff_name'] ?? 'Staff';
-    $is_admin = (isset($_COOKIE['staff_role']) && $_COOKIE['staff_role'] == "admin");
     $message = '';
     $error = '';
 
@@ -67,39 +66,7 @@
                 }
                 $stmt->close();
             }
-        } elseif ($action === 'toggle_status') {
-            $sid = (int) ($_POST['sid'] ?? 0);
-
-            // Prevent changing your own account
-            if ($sid === (int) $_COOKIE['staff_id']) {
-                $error = "You are not allowed to change your own status.";
-            } elseif ($sid > 0) {
-                $stmt = $conn->prepare("SELECT sstatus FROM Staffs WHERE sid = ?");
-                $stmt->bind_param("i", $sid);
-                $stmt->execute();
-                $result = $stmt->get_result();
-                $row = $result->fetch_assoc();
-                $stmt->close();
-
-                if ($row) {
-                    $current = (int) $row['sstatus'];
-                    $new_status = $current ? 0 : 1;
-
-                    $update = $conn->prepare("UPDATE Staffs SET sstatus = ? WHERE sid = ?");
-                    $update->bind_param("ii", $new_status, $sid);
-                    if ($update->execute()) {
-                        $message = "Staff status updated successfully.";
-                    } else {
-                        $error = "Update failed: " . $conn->error;
-                    }
-                    $update->close();
-                } else {
-                    $error = "Staff member not found.";
-                }
-            } else {
-                $error = "Invalid staff ID.";
-            }
-        }
+        } 
     }
 
     // Load staff list

@@ -66,8 +66,6 @@
                         $update->bind_param("si", $newHash, $row['sid']);
                         $update->execute();
                         $update->close();
-
-                        // Optional: log or notify yourself that upgrade happened
                     }
 
                     setcookie("staff_id", $row['sid'], time() + 120);

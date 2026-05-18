@@ -30,7 +30,7 @@
     include '../connections/dbconn.php';
 
     $staff_name = $_COOKIE['staff_name'] ?? 'Staff';
-    $is_admin = (isset($_COOKIE['staff_role']) && $_COOKIE['staff_role'] == "admin");
+    $is_admin = (isset($_COOKIE['staff_role']) && $_COOKIE['staff_role'] == "Administrator");   
 
     $message = '';
     $error = '';
@@ -192,8 +192,23 @@
                 <div class="form-group">
                     <label>Required Materials</label>
                     <div id="materials-container">
-                        <!-- Your dynamic material rows here -->
+                        <div class="material-row"
+                            style="display:flex; gap:1rem; margin-bottom:1rem; align-items:center;">
+                            <select name="materials[]" style="flex:1; padding:0.6rem;">
+                                <option value="">Select Material</option>
+                                <?php foreach ($materials as $m): ?>
+                                    <option value="<?= $m['mid'] ?>">
+                                        <?= htmlspecialchars($m['mname']) ?> (<?= htmlspecialchars($m['munit']) ?>)
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                            <input type="number" name="pmqty[]" min="1" placeholder="Qty"
+                                style="width:100px; padding:0.6rem;">
+                            <button type="button" class="btn-outline remove-material"
+                                style="color:#dc3545;">Remove</button>
+                        </div>
                     </div>
+
                     <button type="button" id="add-material-btn" class="btn-outline" style="margin-top:1rem;">
                         <i class="fas fa-plus"></i> Add Material
                     </button>

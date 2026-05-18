@@ -14,7 +14,7 @@
     // staff/password_change.php
     // Must be logged in as admin
     $role = isset($_COOKIE['staff_role']) ? strtolower(trim($_COOKIE['staff_role'])) : '';
-    $is_admin = ($role === 'admin' || $role === 'administrator');
+    $is_admin = ($role === 'admin' || $role === 'Administrator');
 
     // === AUTO EXTEND COOKIES ON ANY ACTIVITY ===
     if (isset($_COOKIE['staff_id'])) {

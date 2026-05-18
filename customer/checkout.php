@@ -156,12 +156,12 @@
             <a href="profile.php">Profile</a>
         </nav>
         <div class="nav-right">
-        <?php if (isset($_COOKIE['customer_id'])): ?>
-            <span>Welcome,
-                <?= htmlspecialchars($_COOKIE['customer_name'] ?? 'Customer') ?>
-                <?= !empty($_COOKIE['company']) ? ', ' . htmlspecialchars($_COOKIE['company']) : '' ?>
-            </span>
-        <?php endif; ?>
+            <?php if (isset($_COOKIE['customer_id'])): ?>
+                <span>Welcome,
+                    <?= htmlspecialchars($_COOKIE['customer_name'] ?? 'Customer') ?>
+                    <?= !empty($_COOKIE['company']) ? ', ' . htmlspecialchars($_COOKIE['company']) : '' ?>
+                </span>
+            <?php endif; ?>
             <a href="logout.php" class="btn-outline">Logout</a>
         </div>
         <div class="nav-right">
@@ -259,7 +259,30 @@
     </div>
 
     <footer>
-        <!-- your footer -->
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Premium Living</h3>
+                <p>Bringing elegance and comfort to your home since 2015.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="../customer/shop.php">Shop</a></li>
+                    <li><a href="../customer/orders.php">Orders</a></li>
+                    <li><a href="../customer/profile.php">My Account</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Contact</h3>
+                <p>Email: support@premiumliving.com</p>
+                <p>Phone: +852 1234 5678</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>©
+                <?= date("Y") ?> Premium Living Furniture Co. Ltd. All rights reserved.
+            </p>
+        </div>
     </footer>
 
 </body>

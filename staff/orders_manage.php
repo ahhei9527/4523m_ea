@@ -41,8 +41,6 @@
         5 => 'Completed'
     ];
 
-    $is_admin = isset($_COOKIE['staff_role']) && in_array(strtolower(trim($_COOKIE['staff_role'] ?? '')), ['admin', 'administrator']);
-
     // Handle status update
     $message = $error = null;
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_status'])) {
