@@ -11,25 +11,8 @@
 
 <body>
     <?php
-    // staff/logout.php
-    
-    // Delete the cookies properly
-    setcookie('staff_id',   '', time() - 3600, "/", "", false, true);
-    setcookie('staff_name', '', time() - 3600, "/", "", false, true);
-    setcookie('staff_role', '', time() - 3600, "/", "", false, true);
-
-    unset($_COOKIE['staff_id']);
-    unset($_COOKIE['staff_name']);
-    unset($_COOKIE['staff_role']);
-
-    // Destroy session
-    session_start();
-    session_unset();
-    session_destroy();
-
-    // Redirect
-    header("Location: ../index.php");
-    exit();
+    require_once '../includes/auth.php';
+    staffLogout();
     ?>
 </body>
 

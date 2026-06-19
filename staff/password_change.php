@@ -11,9 +11,10 @@
 
 <body>
     <?php
+    require_once '../includes/auth.php';
     // staff/password_change.php
     $role = isset($_COOKIE['staff_role']) ? strtolower(trim($_COOKIE['staff_role'])) : '';
-    $is_admin = ($role === 'admin' || $role === 'Administrator');
+    $is_admin = (isset($_COOKIE['staff_role']) && $_COOKIE['staff_role'] == "Administrator");
 
     // === AUTO EXTEND COOKIES ON ANY ACTIVITY ===
     if (isset($_COOKIE['staff_id'])) {

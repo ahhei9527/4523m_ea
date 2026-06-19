@@ -17,14 +17,9 @@
     $is_admin = (isset($_COOKIE['staff_role']) && $_COOKIE['staff_role'] == "Administrator");
 
     // === AUTO EXTEND COOKIES ON ANY ACTIVITY ===
-    if (isset($_COOKIE['staff_id'])) {
-        $staff_id   = $_COOKIE['staff_id'];
-        $staff_name = $_COOKIE['staff_name'] ?? 'Staff';
-        $staff_role = $_COOKIE['staff_role'] ?? '';
-    } else {
-        header("Location: login.php");
-        exit();
-    }
+    require_once '../includes/auth.php';
+    requireStaffLogin();     // Redirects to login if not logged in
+    requireAdmin();
 
     include '../connections/dbconn.php';
 

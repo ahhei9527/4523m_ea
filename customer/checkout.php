@@ -14,10 +14,8 @@
     // customer/checkout.php
     session_start();
 
-    if (!isset($_COOKIE['customer_id'])) {
-        header("Location: login.php");
-        exit();
-    }
+    require_once '../includes/auth.php';
+    requireCustomerLogin(); 
 
     include '../connections/dbconn.php';
 

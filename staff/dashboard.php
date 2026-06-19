@@ -188,6 +188,8 @@
                     <p>View customer list & basic activity</p>
                     <a href="customers_view.php" class="action-btn">View Customers</a>
                 </div>
+            <?php endif; ?>
+            
 
                 <div class="action-card">
                     <div class="action-icon"><i class="fas fa-users-cog"></i></div>
@@ -195,7 +197,6 @@
                     <p>Change your password</p>
                     <a href="password_change.php" class="action-btn">Change Password</a>
                 </div>
-            <?php endif; ?>
         </div>
 
     </div>

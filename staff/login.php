@@ -11,6 +11,7 @@
 
 <body>
     <?php
+    require_once '../includes/auth.php';
     // staff/login.php
     // If already logged in, go to dashboard
     if (isset($_COOKIE['staff_id']) && isset($_COOKIE['staff_role'])) {
@@ -68,9 +69,9 @@
                         $update->close();
                     }
 
-                    setcookie('staff_id', $row['sid'], time() + 3600, "/", "", false, true);
-                    setcookie('staff_name', $row['sname'], time() + 3600, "/", "", false, true);
-                    setcookie('staff_role', $row['srole'], time() + 3600, "/", "", false, true);
+                    setAuthCookie('staff_id',   $row['sid'], 60);     // 60 minutes
+                    setAuthCookie('staff_name', $row['sname'], 60);
+                    setAuthCookie('staff_role', $row['srole'], 60);
                     header("Location: dashboard.php");
                     exit();
                 } else {

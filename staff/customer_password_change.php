@@ -11,20 +11,10 @@
 
 <body>
     <?php
-    // staff/password_change.php
-    // Must be logged in as admin
-    $role = isset($_COOKIE['staff_role']) ? strtolower(trim($_COOKIE['staff_role'])) : '';
-    $is_admin = ($role === 'admin' || $role === 'Administrator');
+    require_once '../includes/auth.php';
+    requireStaffLogin();     // Redirects to login if not logged in
 
-    // === AUTO EXTEND COOKIES ON ANY ACTIVITY ===
-    if (isset($_COOKIE['staff_id'])) {
-        $staff_id   = $_COOKIE['staff_id'];
-        $staff_name = $_COOKIE['staff_name'] ?? 'Staff';
-        $staff_role = $_COOKIE['staff_role'] ?? '';
-    } else {
-        header("Location: login.php");
-        exit();
-    }
+    requireAdmin();
 
     include '../connections/dbconn.php';
 

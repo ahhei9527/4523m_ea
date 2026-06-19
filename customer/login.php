@@ -11,6 +11,7 @@
 
 <body>
     <?php
+    require_once '../includes/auth.php';
     // customer/login.php
     // If already logged in as customer, redirect to main shop / home
     $register_message = '';
@@ -65,10 +66,10 @@
                         $update->close();
                     }
 
-                    setcookie("customer_id", $row['cid'], time() + 1200, "/", "", false, true);
-                    setcookie("customer_name", $row['cname'], time() + 1200, "/", "", false, true);
-                    setcookie("customer_company", $row['company'], time() + 1200, "/", "", false, true);
-                    setcookie("customer_tel", $row['ctel'], time() + 1200, "/", "", false, true);
+                    setAuthCookie('customer_id',    $row['cid'], 60);
+                    setAuthCookie('customer_name',  $row['cname'], 60);
+                    setAuthCookie('customer_company', $row['company'] ?? '', 60);
+                    setAuthCookie('customer_tel',   $row['ctel'], 60);
                     header("Location: ../index.php");
                     exit();
                 } else {

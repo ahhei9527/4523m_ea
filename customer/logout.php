@@ -11,12 +11,8 @@
 
 <body>
     <?php
-    setcookie("customer_id", "", $expiry, "/", "", false, true);
-    setcookie("customer_name", "", $expiry, "/", "", false, true);
-    setcookie("customer_company", "", $expiry, "/", "", false, true);
-    setcookie("customer_tel", "", $expiry, "/", "", false, true);
-    header("Location: ../index.php");
-    exit();
+    require_once '../includes/auth.php';
+    customerLogout();
     ?>
 </body>
 
