@@ -12,7 +12,6 @@
 <body>
     <?php
     // staff/dashboard.php
-    // === AUTO EXTEND COOKIES ON ANY ACTIVITY ===
     if (isset($_COOKIE['staff_id'])) {
         $staff_id   = $_COOKIE['staff_id'];
         $staff_name = $_COOKIE['staff_name'] ?? 'Staff';

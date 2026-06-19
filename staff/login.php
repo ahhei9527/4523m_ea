@@ -68,9 +68,9 @@
                         $update->close();
                     }
 
-                    setcookie("staff_id", $row['sid'], time() + 120);
-                    setcookie("staff_name", $row['sname'], time() + 120);
-                    setcookie("staff_role", $row['srole'], time() + 120);
+                    setcookie('staff_id', $row['sid'], time() + 3600, "/", "", false, true);
+                    setcookie('staff_name', $row['sname'], time() + 3600, "/", "", false, true);
+                    setcookie('staff_role', $row['srole'], time() + 3600, "/", "", false, true);
                     header("Location: dashboard.php");
                     exit();
                 } else {

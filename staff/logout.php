@@ -13,10 +13,14 @@
     <?php
     // staff/logout.php
     
-    // Force delete cookies
-    setcookie('staff_id', '', time() - 86400);
-    setcookie('staff_name', '', time() - 86400);
-    setcookie('staff_role', '', time() - 86400);
+    // Delete the cookies properly
+    setcookie('staff_id',   '', time() - 3600, "/", "", false, true);
+    setcookie('staff_name', '', time() - 3600, "/", "", false, true);
+    setcookie('staff_role', '', time() - 3600, "/", "", false, true);
+
+    unset($_COOKIE['staff_id']);
+    unset($_COOKIE['staff_name']);
+    unset($_COOKIE['staff_role']);
 
     // Destroy session
     session_start();

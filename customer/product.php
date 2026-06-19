@@ -28,9 +28,6 @@
         setcookie('customer_id',   $customer_id,   time() + 1200, "/", "", false, true);
         setcookie('customer_name', $customer_name, time() + 1200, "/", "", false, true);
         setcookie('customer_company', $customer_company, time() + 1200, "/", "", false, true);
-    } else {
-        header("Location: login.php");
-        exit();
     }
     
     // 1. Get and validate ID from URL
