@@ -127,7 +127,7 @@
                     <label>Role</label>
                     <select name="srole" required>
                         <option value="staff">Staff</option>
-                        <option value="admin">Admin</option>
+                        <option value="admin">Administrator</option>
                     </select>
                 </div>
                 <div class="form-group">

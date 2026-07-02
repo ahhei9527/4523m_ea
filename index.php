@@ -58,7 +58,7 @@
             <?php endif; ?>
         </div>
         <div class="nav-right">
-            <a href="cart.php" class="cart-icon">
+            <a href="customer/cart.php" class="cart-icon">
                 <i class="fas fa-shopping-cart"></i>
                 <span class="cart-count">
                     <?= array_sum($_SESSION['cart'] ?? []) ?>
